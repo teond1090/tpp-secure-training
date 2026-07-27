@@ -169,6 +169,14 @@
   <div class="player" id="player">
     <video id="vid" playsinline preload="metadata" src="training-video.mp4"></video>
     <div class="bigplay" id="bigplay"><div class="btn"></div></div>
+    <div id="vidErr" style="display:none;position:absolute;inset:0;background:#101018;color:#fff;
+      align-items:center;justify-content:center;text-align:center;padding:24px;font-size:15px;
+      line-height:1.6;z-index:60">
+      <div>
+        <div style="font-weight:700;font-size:17px;margin-bottom:8px">The training video didn&rsquo;t load.</div>
+        <div style="opacity:.85">Please refresh this page. If it keeps happening, check your connection or contact Teon Delacruz.</div>
+      </div>
+    </div>
 
     <div class="controls">
       <button id="playBtn" title="Play / Pause (Space)" aria-label="Play or pause">
@@ -510,6 +518,15 @@ document.getElementById('genCert').onclick=()=>{
 document.getElementById('restartBtn').onclick=()=>{location.reload();};
 
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  /* ---------- video load failure ---------- */
+  (function(){
+    var box=document.getElementById('vidErr');
+    function show(){ box.style.display='flex'; }
+    vid.addEventListener('error', show);
+    vid.addEventListener('stalled', function(){ if(!vid.duration) show(); });
+    vid.addEventListener('loadedmetadata', function(){ box.style.display='none'; });
+  })();
 </script>
 </body>
 </html>
