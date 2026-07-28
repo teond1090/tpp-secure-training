@@ -224,7 +224,7 @@
 
   <div class="panel" id="completePanel">
     <h2>🎉 Training Complete!</h2>
-    <div class="scoreline">You answered <b id="scoreCorrect">0</b> of <b id="scoreTotal">13</b> knowledge-check questions correctly on your first try.</div>
+    <div class="scoreline">You answered <b id="scoreCorrect">0</b> of <b id="scoreTotal">14</b> knowledge-check questions correctly on your first try.</div>
     <div class="field">
       <label for="nameInput">Your full name (as it should appear on the certificate)</label>
       <input id="nameInput" type="text" placeholder="e.g., Jordan Miller" autocomplete="name">
@@ -267,7 +267,7 @@
 <script>
 /* ---------- knowledge checks ---------- */
 const QUIZZES = [
-  { at:0.23654, title:"Why TPP Secure Exists", q:[
+  { at:0.22114, title:"Why TPP Secure Exists", q:[
     {q:"When speaking with a tenant, should you ever refer to TPP Secure as \"insurance\"?",
      a:["No — it's a protection plan, not insurance","Yes, it's just another word for insurance","Only when they ask about coverage"], c:0,
      e:"Per the California Supreme Court (Heckard v. A-1 Self Storage), protection plans are NOT insurance and aren't regulated by the Department of Insurance. Never call it insurance."},
@@ -278,10 +278,10 @@ const QUIZZES = [
      a:["Full replacement cost, with no deductible","Actual cash value after yearly depreciation","Market value, minus a deductible"], c:0,
      e:"Covered losses are settled at full replacement cost with no deductible — unlike a homeowners policy, which depreciates the item and applies a deductible."}
   ]},
-  { at:0.52986, title:"Plans &amp; Presenting", q:[
-    {q:"What are the three TPP Secure plan limits?",
-     a:["$2,000, $3,000 and $5,000","$1,000, $2,500 and $10,000","$5,000, $10,000 and $25,000"], c:0,
-     e:"$2,000 for $12 a month, $3,000 for $15, and $5,000 for $25 — which works out to roughly 40, 50 and 83 cents a day."},
+  { at:0.51916, title:"Plans & Presenting", q:[
+    {q:"A customer wants coverage that doesn't match the plans shown in this training. What's true?",
+     a:["Coverage levels and pricing are flexible — we can accommodate most needs and requests","The three plan limits are fixed and cannot be changed","They would have to find a different provider"], c:0,
+     e:"The plans shown here are examples, not a fixed rate card. Our coverage levels and pricing are flexible and we can accommodate most customer needs and requests — so if what they need isn't on the list, just ask."},
     {q:"What's the best way to offer the plan to a new tenant?",
      a:["Ask which level of protection they'd like — not whether they want one","Ask if they'd like to add a protection plan","Wait for them to bring it up"], c:0,
      e:"\"Would you like a protection plan?\" invites a no. Asking which plan moves the conversation from whether to which — and naming the middle plan first leaves you room to move either direction."},
@@ -289,7 +289,7 @@ const QUIZZES = [
      a:["$5,000 and above","Every plan, no exceptions","Only plans over $10,000"], c:0,
      e:"Plans of $5,000 and above require a short application with an inventory list and photos, so underwriters can establish a baseline before anything happens."}
   ]},
-  { at:0.75089, title:"Coverage &amp; Exclusions", q:[
+  { at:0.76711, title:"Coverage & Exclusions", q:[
     {q:"Which of these is NOT covered?",
      a:["Flood","Fire","Burglary"], c:0,
      e:"Flood is not covered — that's only available through the National Flood Insurance Program. Also NOT covered: theft / mysterious disappearance, and mold. Fire and burglary ARE covered."},
@@ -301,9 +301,12 @@ const QUIZZES = [
      e:"No burglary claim is paid without a police report on file. You also need photos of visible forced entry, and your own manager's incident report."},
     {q:"A tenant hands you a homeowners declaration page as proof of coverage. What should you check?",
      a:["Whether it limits or excludes property stored off-premises","Only that the policy hasn't expired","Nothing — a dec page always satisfies the lease"], c:0,
-     e:"Many policies limit off-premises property to 10–50% of the personal-property limit, and some exclude it outright. If you see that exclusion, tell them — their belongings in your building may not be covered."}
+     e:"Many policies limit off-premises property to 10–50% of the personal-property limit, and some exclude it outright. If you see that exclusion, tell them — their belongings in your building may not be covered."},
+    {q:"How do the tenant announcement letters go out?",
+     a:["We send them to you for approval first, then they go out from your own property management software","TPP emails them directly to your tenants","You have to write them yourself"], c:0,
+     e:"We write the letters and send them to you for approval — nothing goes out until you've signed off. Once approved, they're sent from your own property management software so they arrive from a name your tenants recognize. Teon Delacruz handles any wording or timing changes you want."}
   ]},
-  { at:0.89881, title:"Filing a Claim", q:[
+  { at:0.90539, title:"Filing a Claim", q:[
     {q:"How long does a tenant have to file a claim, and where?",
      a:["30 days from discovery, online at tppclaims.com","90 days, by calling the office","7 days, by mailing a form"], c:0,
      e:"30 days from the date of discovery, filed online at tppclaims.com."},
