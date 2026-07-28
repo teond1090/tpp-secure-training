@@ -256,6 +256,7 @@
       </div>
     </div>
     <div class="cert-actions">
+      <button class="btn-primary" id="reportBtn" style="background:#16233F">✉️ Report My Completion to TPP</button>
       <button class="btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
       <button class="btn-ghost" id="restartBtn">Start Over</button>
     </div>
@@ -530,6 +531,54 @@ function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','
     vid.addEventListener('stalled', function(){ if(!vid.duration) show(); });
     vid.addEventListener('loadedmetadata', function(){ box.style.display='none'; });
   })();
+
+/* ---------- completion reporting ---------- */
+/* Set REPORT_FORM to a Microsoft Forms / Google Forms prefill URL to collect
+   completions in a spreadsheet. Leave it empty and the button opens a
+   pre-addressed email instead. Both give TPP a dated record; neither lets the
+   page send anything on its own. */
+const REPORT_FORM = '';
+const REPORT_TO   = 'training@tenantpropertyprotection.com';
+const REPORT_CC   = 'tdelacruz@tenantpropertyprotection.com';
+const COURSE_NAME = 'TPP Secure';
+
+document.getElementById('reportBtn').onclick=function(){
+  const name  = (document.getElementById('certName').textContent||'').trim();
+  const score = (document.getElementById('certScore').textContent||'').trim();
+  const id    = (document.getElementById('certId').textContent||'').trim();
+  const date  = (document.getElementById('certDate')
+                 ? document.getElementById('certDate').textContent
+                 : new Date().toLocaleDateString()).trim();
+  if(!name || name==='\u2014'){ alert('Please generate your certificate first.'); return; }
+
+  if(REPORT_FORM){
+    const q = REPORT_FORM
+      + (REPORT_FORM.indexOf('?')<0?'?':'&')
+      + 'name='   + encodeURIComponent(name)
+      + '&course='+ encodeURIComponent(COURSE_NAME)
+      + '&score=' + encodeURIComponent(score)
+      + '&date='  + encodeURIComponent(date)
+      + '&cert='  + encodeURIComponent(id);
+    window.open(q,'_blank','noopener');
+    return;
+  }
+
+  const subject = 'Training completed: ' + COURSE_NAME + ' \u2014 ' + name;
+  const body =
+      'Training completion report\n' +
+      '--------------------------\n' +
+      'Name:            ' + name  + '\n' +
+      'Course:          ' + COURSE_NAME + '\n' +
+      'Score:           ' + score + '\n' +
+      'Date completed:  ' + date  + '\n' +
+      'Certificate ID:  ' + id    + '\n\n' +
+      'Company / facility: \n' +
+      '(Please add your company name above before sending.)\n';
+  window.location.href = 'mailto:' + REPORT_TO
+      + '?cc=' + encodeURIComponent(REPORT_CC)
+      + '&subject=' + encodeURIComponent(subject)
+      + '&body='    + encodeURIComponent(body);
+};
 </script>
 </body>
 </html>
