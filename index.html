@@ -104,6 +104,18 @@
   .btn-primary:hover{background:var(--red-dark)}
 
   /* ---------- completion + certificate ---------- */
+  /* opt-out module (customer links only) */
+  .oo-step{border-top:1px solid var(--line);padding:18px 0 4px}
+  .oo-step:first-of-type{border-top:0;padding-top:4px}
+  .oo-kick{font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--red)}
+  .oo-step h3{margin:4px 0 6px;font-size:1.08rem}
+  .oo-step p{margin:0 0 10px;font-size:.94rem;color:var(--muted);line-height:1.6}
+  .oo-list{margin:0;padding-left:20px;font-size:.94rem;line-height:1.75}
+  .oo-list b{color:var(--ink)}
+  .oo-flag{background:#fff5d6;border-left:3px solid #e0b23c;border-radius:6px;
+    padding:11px 13px;font-size:.9rem;margin:10px 0 0}
+  .oo-check{margin-top:26px;border-top:2px solid var(--line);padding-top:20px}
+  .oo-locked{font-size:.86rem;color:var(--muted);margin-top:14px}
   .panel{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:30px;margin-top:20px;display:none}
   .panel.show{display:block}
   .panel h2{color:var(--red);margin:0 0 6px}
@@ -220,7 +232,21 @@
       </div>
     </div>
   </div>
-  <p class="hint">You can pause, rewind and fast-forward freely. The video stops at four short knowledge checks — answer each one correctly to unlock the rest.</p>
+  <p class="hint" id="playerHint">You can pause, rewind and fast-forward freely. The video stops at four short knowledge checks — answer each one correctly to unlock the rest.</p>
+
+  <div class="panel" id="optoutPanel">
+    <h2>One more module</h2>
+    <div class="scoreline" id="ooLede"></div>
+    <div id="ooBody"></div>
+    <div class="oo-check">
+      <div class="kicker" id="ooKicker">Knowledge Check 5 of 5</div>
+      <div id="ooQuiz"></div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px">
+        <button class="btn-primary" id="ooSubmit">Submit Answers</button>
+        <div class="msg" id="ooMsg"></div>
+      </div>
+    </div>
+  </div>
 
   <div class="panel" id="completePanel">
     <h2>🎉 Training Complete!</h2>
@@ -319,7 +345,26 @@ const QUIZZES = [
      e:"Live adjusters are available Monday through Friday, 7:00 AM to 5:30 PM Arizona time. Claims can be filed online at any hour of any day."}
   ]}
 ];
-const TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
+let TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
+
+/* =====================================================================
+   OPT-OUT MODULE — shown only on a customer link, e.g.  ?client=protego
+
+   The opt-out process is not in the recorded video, so it runs as a final
+   module after it: read it, then answer its knowledge check before the
+   certificate unlocks. Without a recognised ?client= none of this loads
+   and the course behaves exactly as it always has.
+   ===================================================================== */
+const OPTOUT_CLIENTS = {
+  protego: { name:'Protego', site:'myownpolicy.com', email:'support@myownpolicy.com',
+             days:10, csm:'Teon Delacruz' }
+};
+const OO = (function(){
+  try {
+    const id = new URLSearchParams(location.search).get('client');
+    return (id && Object.prototype.hasOwnProperty.call(OPTOUT_CLIENTS, id)) ? OPTOUT_CLIENTS[id] : null;
+  } catch(e){ return null; }
+})();
 
 let firstTryCorrect = 0, activeQuiz = -1;
 const done = QUIZZES.map(()=>false);
@@ -498,9 +543,159 @@ quizContinue.onclick=()=>{
   vid.play();
 };
 
+/* ---------- opt-out module ---------- */
+if (OO) {
+  document.getElementById('playerHint').textContent =
+    'You can pause, rewind and fast-forward freely. The video stops at four short knowledge checks, '
+    + 'and one final module follows it — answer each one correctly to unlock your certificate.';
+}
+let ooDone = !OO;               /* nothing to pass when the module is off */
+let ooFirstTryCounted = false;
+
+if (OO) {
+  const S = OO.site, E = OO.email, D = OO.days;
+  TOTAL_Q += 4;
+
+  document.getElementById('ooLede').innerHTML =
+    'The recorded course does not cover the opt-out process yet, so it is here instead. '
+    + 'Read it through, then answer the check at the bottom to unlock your certificate.';
+
+  document.getElementById('ooBody').innerHTML = `
+    <div class="oo-step">
+      <div class="oo-kick">The opt-out process</div>
+      <h3>How a tenant opts out</h3>
+      <p>A tenant with their own insurance is allowed to opt out — but it only counts once we can
+         verify the policy. They go to <b><a href="https://${S}" target="_blank" rel="noopener">${S}</a></b>,
+         fill in their information and attach a photo of their policy.</p>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">Get this right</div>
+      <h3>The photo is everything</h3>
+      <p>That photo has to clearly show three things, all readable, in one image:</p>
+      <ul class="oo-list">
+        <li><b>The insurance company</b></li>
+        <li><b>The policy number</b></li>
+        <li><b>The expiration date</b></li>
+      </ul>
+      <div class="oo-flag">If any one of them is missing, cut off or unreadable, the policy
+        <b>cannot be added and the opt-out does not go through.</b> Ask for their
+        <b>declaration page</b> — it carries all three at once. If it is on their phone, have them
+        send it there and then.</div>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">The deadline</div>
+      <h3>The ${D}-day window</h3>
+      <p>The clock starts <b>the day they move in and sign the lease</b>. From that day they have
+         <b>${D} days</b> to get us a policy we can verify. If those ${D} days pass without one, they are
+         <b>automatically enrolled in the protection plan</b>.</p>
+      <p>That is not a door slamming shut — a tenant can opt out at any time afterwards. But be
+         straight about the money: <b>the plan is not pro-rated.</b> A full month is charged whether
+         they are on it for one day or the whole month, and there is no partial refund.</p>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">Your shortcut</div>
+      <h3>One email address</h3>
+      <p>If a tenant cannot get the upload to work they email
+         <b><a href="mailto:${E}">${E}</a></b> instead, attaching that same declaration page — we add it
+         the same way. That address is also <b>yours</b>: use it any time to confirm which of your
+         tenants have actually sent their policies in. Reviewed <b>Monday to Friday</b>.</p>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">Before you launch</div>
+      <h3>The exclusion list</h3>
+      <p>Some units should never receive an opt-out notice at all — tenants <b>grandfathered in</b>,
+         <b>company units</b> and <b>charity units</b>. Those go on an exclusion list: no notice, no
+         ${D}-day clock, no automatic enrolment. Send <b>${OO.csm}</b> the list of tenants to exclude,
+         ideally before launch.</p>
+    </div>`;
+
+  const OO_Q = [
+    { q:'A tenant sends a photo of their policy to opt out. What must it show?',
+      a:['The insurance company, the policy number, and the expiration date',
+         'The tenant\u2019s name and unit number only',
+         'Just the name of the insurance company'], c:0,
+      e:'All three, readable, in one image. If any one is missing the policy cannot be added and the '
+       + 'opt-out does not go through — which is why the declaration page is the thing to ask for.' },
+    { q:'How long does a tenant have to get their policy to us?',
+      a:['10 days from the day they move in and sign the lease',
+         '30 days from move-in',
+         'Until the end of their first month'], c:0,
+      e:'Ten days from move-in and lease signing. If that passes without a policy we can verify, the '
+       + 'tenant is automatically enrolled in the protection plan.' },
+    { q:'A tenant opts out on the 20th and asks for that month back. What do you tell them?',
+      a:['The plan is not pro-rated — the full month is charged, with no partial refund',
+         'They get a refund for the unused days',
+         'The charge is reversed automatically'], c:0,
+      e:'A full month is charged whether the tenant is on the plan for one day or the whole month. '
+       + 'Saying so at the counter is much easier than explaining it afterwards.' },
+    { q:'A tenant cannot get the upload on the site to work. What do you tell them?',
+      a:['Email it to ' + E + ' with a photo of their declaration page',
+         'Tell them to try again next month',
+         'Nothing — they have missed their chance'], c:0,
+      e:'The email route works exactly the same way and is reviewed Monday to Friday. That same '
+       + 'address also lets you confirm which tenants have sent theirs in.' }
+  ];
+
+  const ooQuiz = document.getElementById('ooQuiz');
+  OO_Q.forEach((item,qi)=>{
+    const wrap=document.createElement('div');wrap.className='qitem';wrap.dataset.graded='0';wrap.dataset.locked='0';
+    const qp=document.createElement('p');qp.className='q';
+    qp.innerHTML='<span class="qnum">Q'+(qi+1)+'.</span>'+escapeHtml(item.q);
+    wrap.appendChild(qp);
+    item.a.forEach((opt,oi)=>{
+      const lab=document.createElement('label');lab.className='opt';
+      lab.innerHTML='<input type="radio" name="oo_'+qi+'" value="'+oi+'"><span>'+escapeHtml(opt)+'</span>';
+      wrap.appendChild(lab);
+    });
+    const ex=document.createElement('div');ex.className='explain';ex.textContent=item.e;
+    wrap.appendChild(ex);
+    ooQuiz.appendChild(wrap);
+  });
+
+  /* graded the same way as the in-video checks: wrong answers explain and retry */
+  document.getElementById('ooSubmit').onclick=()=>{
+    const msg=document.getElementById('ooMsg');
+    const items=[...ooQuiz.children];
+    let unanswered=0, allCorrect=true;
+    items.forEach((wrap,qi)=>{
+      if(wrap.dataset.locked==='1') return;
+      const picked=wrap.querySelector('input:checked');
+      if(!picked){unanswered++; allCorrect=false; return;}
+      const val=parseInt(picked.value,10), correct=OO_Q[qi].c;
+      const opts=[...wrap.querySelectorAll('.opt')], ex=wrap.querySelector('.explain');
+      if(wrap.dataset.graded==='0'){ wrap.dataset.graded='1'; if(val===correct) firstTryCorrect++; }
+      if(val===correct){
+        opts.forEach(o=>o.classList.add('locked'));
+        opts[correct].classList.add('correct');
+        wrap.querySelectorAll('input').forEach(inp=>inp.disabled=true);
+        ex.classList.remove('err'); ex.classList.add('show');
+        wrap.dataset.locked='1';
+      } else {
+        opts.forEach(o=>o.classList.remove('wrong'));
+        opts[val].classList.add('wrong');
+        ex.classList.add('err'); ex.classList.add('show');
+        allCorrect=false;
+      }
+    });
+    if(unanswered>0){ msg.className='msg err'; msg.textContent='Please answer every question before submitting.'; return; }
+    if(!allCorrect){ msg.className='msg err'; msg.textContent='Some answers need another look — review the notes in red and try again.'; return; }
+    msg.className='msg ok'; msg.textContent='All correct — that is the whole course.';
+    document.getElementById('ooSubmit').style.display='none';
+    ooDone=true;
+    showComplete();
+  };
+}
+
 /* ---------- completion + certificate ---------- */
 vid.addEventListener('ended',()=>{ if(done.every(Boolean)) showComplete(); });
 function showComplete(){
+  if (OO && !ooDone) {                       /* module first, certificate after */
+    if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+    const o=document.getElementById('optoutPanel');
+    o.classList.add('show');
+    if(o.scrollIntoView)o.scrollIntoView({behavior:'smooth'});
+    return;
+  }
   document.getElementById('scoreCorrect').textContent=firstTryCorrect;
   document.getElementById('scoreTotal').textContent=TOTAL_Q;
   if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
