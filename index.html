@@ -114,6 +114,11 @@
   .oo-list b{color:var(--ink)}
   .oo-flag{background:#fff5d6;border-left:3px solid #e0b23c;border-radius:6px;
     padding:11px 13px;font-size:.9rem;margin:10px 0 0}
+  .oo-s{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;font-size:.94rem;
+    color:var(--muted);line-height:1.6}
+  .oo-s b{color:var(--ink)}
+  .oo-n{flex:none;width:26px;height:26px;border-radius:50%;background:#16233F;color:#fff;
+    display:grid;place-items:center;font-weight:700;font-size:.82rem;margin-top:2px}
   .oo-check{margin-top:26px;border-top:2px solid var(--line);padding-top:20px}
   .oo-locked{font-size:.86rem;color:var(--muted);margin-top:14px}
   .panel{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:30px;margin-top:20px;display:none}
@@ -357,7 +362,7 @@ let TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
    ===================================================================== */
 const OPTOUT_CLIENTS = {
   protego: { name:'Protego', site:'myownpolicy.com', email:'support@myownpolicy.com',
-             days:10, csm:'Teon Delacruz' }
+             days:10, csm:'Teon Delacruz', csmEmail:'tdelacruz@tenantpropertyprotection.com' }
 };
 const OO = (function(){
   try {
@@ -557,56 +562,101 @@ if (OO) {
   TOTAL_Q += 4;
 
   document.getElementById('ooLede').innerHTML =
-    'The recorded course does not cover the opt-out process yet, so it is here instead. '
-    + 'Read it through, then answer the check at the bottom to unlock your certificate.';
+    'The Tenant Opt-Out Process is part of this course — the process is the same whichever plan '
+    + 'the tenant is on. Read it through, then answer the check at the bottom to unlock your certificate.';
 
   document.getElementById('ooBody').innerHTML = `
     <div class="oo-step">
-      <div class="oo-kick">The opt-out process</div>
+      <div class="oo-kick">The Tenant Opt-Out Process</div>
       <h3>How a tenant opts out</h3>
-      <p>A tenant with their own insurance is allowed to opt out — but it only counts once we can
-         verify the policy. They go to <b><a href="https://${S}" target="_blank" rel="noopener">${S}</a></b>,
-         fill in their information and attach a photo of their policy.</p>
-    </div>
-    <div class="oo-step">
-      <div class="oo-kick">Get this right</div>
-      <h3>The photo is everything</h3>
-      <p>That photo has to clearly show three things, all readable, in one image:</p>
-      <ul class="oo-list">
-        <li><b>The insurance company</b></li>
-        <li><b>The policy number</b></li>
-        <li><b>The expiration date</b></li>
-      </ul>
-      <div class="oo-flag">If any one of them is missing, cut off or unreadable, the policy
-        <b>cannot be added and the opt-out does not go through.</b> Ask for their
-        <b>declaration page</b> — it carries all three at once. If it is on their phone, have them
-        send it there and then.</div>
+      <p>A tenant who already carries their own insurance can <b>opt out</b> by sending us their
+         policy — online at <b><a href="https://${S}" target="_blank" rel="noopener">${S}</a></b> or
+         by email. They have <b>${D} days from move-in</b> to do it. Either route ends the same way:
+         <b>we have to be able to verify the policy from the photo they send.</b>
+         That single point is what most failed opt-outs come down to.</p>
     </div>
     <div class="oo-step">
       <div class="oo-kick">The deadline</div>
       <h3>The ${D}-day window</h3>
-      <p>The clock starts <b>the day they move in and sign the lease</b>. From that day they have
-         <b>${D} days</b> to get us a policy we can verify. If those ${D} days pass without one, they are
-         <b>automatically enrolled in the protection plan</b>.</p>
-      <p>That is not a door slamming shut — a tenant can opt out at any time afterwards. But be
-         straight about the money: <b>the plan is not pro-rated.</b> A full month is charged whether
-         they are on it for one day or the whole month, and there is no partial refund.</p>
+      <p>The clock starts <b>the day they move in and sign the lease</b>. From that day the tenant has
+         <b>${D} days</b> to get a policy to us that we can verify.</p>
+      <p>If the ${D} days pass without one, <b>they are automatically enrolled in the protection
+         plan</b>. They can still opt out later — see below — but the month they are on the plan is
+         charged in full. That is why this is worth saying out loud at the counter rather than leaving
+         it to the paperwork — it is a short window, and a tenant who means to do it later often
+         doesn&rsquo;t. If they have their declaration page on their phone, the quickest thing is to
+         have them send it there and then.</p>
     </div>
     <div class="oo-step">
-      <div class="oo-kick">Your shortcut</div>
-      <h3>One email address</h3>
-      <p>If a tenant cannot get the upload to work they email
-         <b><a href="mailto:${E}">${E}</a></b> instead, attaching that same declaration page — we add it
-         the same way. That address is also <b>yours</b>: use it any time to confirm which of your
-         tenants have actually sent their policies in. Reviewed <b>Monday to Friday</b>.</p>
+      <div class="oo-kick">Get this right</div>
+      <h3>The photo has to show all three</h3>
+      <ul class="oo-list">
+        <li><b>The insurance company</b> — the carrier&rsquo;s name as it appears on the policy</li>
+        <li><b>The policy number</b></li>
+        <li><b>The expiration date</b> — when the policy runs out</li>
+      </ul>
+      <div class="oo-flag">If any one of the three is missing, cut off or unreadable, the policy
+        <b>cannot be added to the tenant&rsquo;s account and the opt-out does not go through.</b>
+        A photo of their <b>declaration page</b> normally shows all three in a single shot — that is
+        the one to ask for.</div>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">Step by step</div>
+      <h3>How a submission runs</h3>
+      <div class="oo-s"><div class="oo-n">1</div><div><b>The tenant enters their information.</b>
+        Send them to <a href="https://${S}" target="_blank" rel="noopener">${S}</a>, where they fill
+        in their details — within <b>${D} days</b> of moving in and signing the lease.</div></div>
+      <div class="oo-s"><div class="oo-n">2</div><div><b>They attach a photo of their policy.</b>
+        This is the step that matters. The photo must clearly show the insurance company, the policy
+        number and the expiration date — all three, in one readable image.</div></div>
+      <div class="oo-s"><div class="oo-n">3</div><div><b>Our team reviews it.</b>
+        An internal team reviews opt-out submissions and the support inbox <b>Monday to Friday</b>.
+        Once the three details are verified, the policy is added to the tenant&rsquo;s
+        account.</div></div>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">If a tenant can&rsquo;t submit online</div>
+      <h3>Two routes in — and one for you</h3>
+      <p><b>Online — the usual route.</b>
+         <a href="https://${S}" target="_blank" rel="noopener">${S}</a> — the tenant fills in their
+         information and uploads the photo themselves.</p>
+      <p><b>By email — if they hit any trouble.</b> If a tenant has trouble uploading or submitting
+         on the site, they can email us directly at <a href="mailto:${E}">${E}</a>. We add policies
+         by email exactly the same way: the tenant attaches a photo of their <b>declaration page</b>
+         and we verify the carrier, policy number and expiration date from it.</p>
+      <p><b>For you — checking who has sent theirs in.</b> That same address works for
+         <b>property managers</b>. Email <a href="mailto:${E}">${E}</a> to verify and confirm which
+         of your tenants have sent us their policies. Reviewed Monday to Friday.</p>
+    </div>
+    <div class="oo-step">
+      <div class="oo-kick">Opting out later</div>
+      <h3>Any time — and how the month is billed</h3>
+      <p><b>A tenant can opt out at any time.</b> The ${D} days is the window for avoiding enrolment
+         in the first place — it is not a cut-off after which they are stuck on the plan. The process
+         is exactly the same: send us the policy, showing the same three details.</p>
+      <p>Be straight about the billing, because it is the next question every time: <b>the plan is
+         not pro-rated — a full month is charged whether the tenant is on it for one day or the whole
+         month.</b> Opting out part-way through a month does not reduce that month&rsquo;s charge,
+         and there is no partial refund. Saying so plainly at the counter is far easier than
+         explaining it afterwards.</p>
     </div>
     <div class="oo-step">
       <div class="oo-kick">Before you launch</div>
       <h3>The exclusion list</h3>
-      <p>Some units should never receive an opt-out notice at all — tenants <b>grandfathered in</b>,
-         <b>company units</b> and <b>charity units</b>. Those go on an exclusion list: no notice, no
-         ${D}-day clock, no automatic enrolment. Send <b>${OO.csm}</b> the list of tenants to exclude,
-         ideally before launch.</p>
+      <p>Some units should never receive an opt-out notice in the first place:</p>
+      <ul class="oo-list">
+        <li>Tenants who have been <b>grandfathered in</b></li>
+        <li><b>Company units</b></li>
+        <li><b>Charity units</b></li>
+      </ul>
+      <p style="margin-top:10px">These can be added to an <b>exclusion list</b>. Once a tenant is on
+         it they are <b>never sent an opt-out notification at all</b> — no notice, no ${D}-day clock,
+         no automatic enrolment.</p>
+      <p>Setting it up is one email. Send <b>${OO.csm}</b> the list of tenants you want excluded and
+         we will add them. Worth doing <b>before launch</b>, so nobody who shouldn&rsquo;t hear from
+         us does.
+         <a href="mailto:${OO.csmEmail}?subject=Opt-out%20exclusion%20list">Send your exclusion list
+         to ${OO.csm}</a>.</p>
     </div>`;
 
   const OO_Q = [
