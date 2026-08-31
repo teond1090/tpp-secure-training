@@ -306,9 +306,9 @@ const QUIZZES = [
     {q:"Roughly what share of self-storage tenants carry no homeowners insurance at all?",
      a:["About two-thirds — roughly 67%","About 10%","Almost none — nearly everyone is covered"], c:0,
      e:"Roughly 67% of self-storage tenants have no homeowners policy. And of those who do, many have off-premises limits or exclusions they don't know about."},
-    {q:"How is a covered loss paid under the protection plan?",
-     a:["Full replacement cost, with no deductible","Actual cash value after yearly depreciation","Market value, minus a deductible"], c:0,
-     e:"Covered losses are settled at full replacement cost with no deductible — unlike a homeowners policy, which depreciates the item and applies a deductible."}
+    {q:"How is a covered loss valued under the protection plan?",
+     a:["At fair market value","At full replacement cost — brand-new items regardless of age","At a flat percentage of the plan limit"], c:0,
+     e:"Claims are processed based on fair market value. That is different from full replacement cost — which would mean replacing items with new items of similar quality — and the plan does not settle claims that way."}
   ]},
   { at:0.51916, title:"Plans & Presenting", q:[
     {q:"A customer wants coverage that doesn't match the plans shown in this training. What's true?",
@@ -330,24 +330,27 @@ const QUIZZES = [
      e:"Rodent damage is covered up to a $500 sublimit."},
     {q:"For a burglary claim to be paid, what must happen?",
      a:["A police report must be filed and a copy provided","Nothing — just file online","The tenant only needs to tell the manager"], c:0,
-     e:"No burglary claim is paid without a police report on file. You also need photos of visible forced entry, and your own manager's incident report."},
+     e:"No burglary claim is paid without a police report on file. The claim also needs photos of visible forced entry and your incident report as the manager."},
     {q:"A tenant hands you a homeowners declaration page as proof of coverage. What should you check?",
      a:["Whether it limits or excludes property stored off-premises","Only that the policy hasn't expired","Nothing — a dec page always satisfies the lease"], c:0,
      e:"Many policies limit off-premises property to 10–50% of the personal-property limit, and some exclude it outright. If you see that exclusion, tell them — their belongings in your building may not be covered."},
     {q:"How do the tenant announcement letters go out?",
-     a:["We send them to you for approval first, then they go out from your own property management software","TPP emails them directly to your tenants","You have to write them yourself"], c:0,
-     e:"We write the letters and send them to you for approval — nothing goes out until you've signed off. Once approved, they're sent from your own property management software so they arrive from a name your tenants recognize. Teon Delacruz handles any wording or timing changes you want."}
+     a:["You approve them first, then they go out from your own property management software","TPP emails them directly to your tenants","You have to write them yourself from scratch"], c:0,
+     e:"Nothing reaches a tenant until you've signed off. Depending on your program setup, we provide finished, ready-to-send letters or the files your team uses to produce them — either way, they're sent from your own property management software so they arrive from a name your tenants recognize. Teon Delacruz handles any wording or timing changes you want."}
   ]},
   { at:0.90539, title:"Filing a Claim", q:[
     {q:"How long does a tenant have to file a claim, and where?",
      a:["30 days from discovery, online at tppclaims.com","90 days, by calling the office","7 days, by mailing a form"], c:0,
-     e:"30 days from the date of discovery, filed online at tppclaims.com."},
+     e:"30 days from the date of discovery, filed online at tppclaims.com. The tenant gathers their own receipts and documentation and submits the claim themselves — the manager's role is the incident report and supporting paperwork."},
     {q:"A tenant asks how much they'll be reimbursed. What do you say?",
      a:["Direct them to the TPP claims adjuster","Give them your best estimate to be helpful","Tell them to remove their items first"], c:0,
      e:"Never give claims advice or discuss reimbursement amounts. Redirect to the adjuster, and don't move contents until documentation is complete."},
     {q:"When are live claims adjusters available?",
-     a:["Monday–Friday, 7:00 AM – 5:30 PM Arizona time","24 hours a day, seven days a week","Weekends only"], c:0,
-     e:"Live adjusters are available Monday through Friday, 7:00 AM to 5:30 PM Arizona time. Claims can be filed online at any hour of any day."}
+     a:["Monday–Friday, 7:00 AM – 5:00 PM Arizona time","24 hours a day, seven days a week","Weekends only"], c:0,
+     e:"Live adjusters are available Monday through Friday, 7:00 AM to 5:00 PM Arizona time. Claims can be filed online at any hour of any day."},
+    {q:"A tenant asks when their claim will be paid. What's accurate to say?",
+     a:["Processing can take up to 30 days, though many claims are completed sooner","Every claim is paid within 72 hours","Payment is guaranteed by the end of the week"], c:0,
+     e:"Never promise a payment timeline. Claims processing can take up to 30 days, although many claims are completed sooner. The adjuster keeps the tenant informed as the claim moves, and anyone with claims portal access can check a claim's status in the portal at any time."}
   ]}
 ];
 let TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
@@ -426,7 +429,10 @@ function seekTo(t){
   if(!vid.duration) return;
   const g=gateTime();
   let target=Math.max(0,Math.min(t,vid.duration));
-  if(target>=g){ target=Math.max(0,g-0.05); toast('Finish this knowledge check to unlock the rest'); }
+  /* land a little short of the gate: clamping right onto it made enforceGate
+     open the next knowledge check instantly, which read as the page jumping
+     to that section on its own */
+  if(target>=g){ target=Math.max(0,g-1.5); toast('Finish this knowledge check to unlock the rest'); }
   vid.currentTime=target;
   updateUI();
 }
@@ -468,7 +474,7 @@ document.addEventListener('keydown',e=>{
 
 /* enforce the gate during playback and on any external seek */
 vid.addEventListener('timeupdate',()=>{ updateUI(); enforceGate(); });
-vid.addEventListener('seeking',()=>{ const g=gateTime(); if(vid.currentTime>g){ vid.currentTime=Math.max(0,g-0.05); } });
+vid.addEventListener('seeking',()=>{ const g=gateTime(); if(vid.currentTime>g){ vid.currentTime=Math.max(0,g-1.5); } });
 function enforceGate(){
   const g=gateTime();
   if(g===Infinity) return;
@@ -631,7 +637,7 @@ if (OO) {
     <div class="oo-step">
       <div class="oo-kick">Opting out later</div>
       <h3>Any time — and how the month is billed</h3>
-      <p><b>A tenant can opt out at any time.</b> The ${D} days is the window for avoiding enrolment
+      <p><b>A tenant can opt out at any time.</b> The ${D} days is the window for avoiding enrollment
          in the first place — it is not a cut-off after which they are stuck on the plan. The process
          is exactly the same: send us the policy, showing the same three details.</p>
       <p>Be straight about the billing, because it is the next question every time: <b>the plan is
@@ -651,7 +657,7 @@ if (OO) {
       </ul>
       <p style="margin-top:10px">These can be added to an <b>exclusion list</b>. Once a tenant is on
          it they are <b>never sent an opt-out notification at all</b> — no notice, no ${D}-day clock,
-         no automatic enrolment.</p>
+         no automatic enrollment.</p>
       <p>Setting it up is one email. Send <b>${OO.csm}</b> the list of tenants you want excluded and
          we will add them. Worth doing <b>before launch</b>, so nobody who shouldn&rsquo;t hear from
          us does.
