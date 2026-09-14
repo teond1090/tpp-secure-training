@@ -1,15 +1,21 @@
 # TPP Secure — Managers Onboarding to Success
-## Narration script v4 — voice: Tahlia Brooks (HeyGen `0b440d1ac2454d69a73302fc806522b1`)
+## Narration script v5 — voice: Annie - Lifelike (HeyGen `330290724a1b470fb63153f34d4c0183`)
+## Avatar: Annie, Office Standing Front (`Annie_Office_Standing_Front_public`) — Avatar V engine, motion prompts enabled
 
 Written for spoken delivery: contractions, short sentences, direct address.
-Facts updated per the September revision list: fair market value (not
-replacement cost), adjusters 7:00 AM – 5:00 PM Arizona, claims paid in up to
-30 days (no 72-hour promise), submission confirmation is the only automatic
-email, claims communication through the portal, tenant submits their own
-claim, marketing materials language covers both program setups.
 
-The four knowledge checks gate at the end of each section, matching the
-course player.
+Incorporates the Claims team / Shelly revision list:
+fair market value (not full replacement cost), no 72-hour payment promise
+(up to 30 days), only the filing email is automated, claims portal preferred
+over email, adjuster hours 7:00 AM - 5:00 PM Arizona, portal access is
+structured per portfolio (not one login per location), "Never Outsourced"
+repositioned, marketing materials language covers both delivery models,
+tenant vs. manager responsibilities always explicit.
+
+Section 5 is the Tenant Opt-Out Process, now delivered in the video itself
+rather than as a separate reading module.
+
+Five knowledge checks, one at the end of each section.
 
 ---
 
@@ -115,12 +121,12 @@ you spot that exclusion, tell the tenant! Their belongings in your building
 may not be covered at all, and they'd much rather hear it from you now than
 from an adjuster after a loss.
 
-And the tenant announcement letters? Easy. You approve them first — nothing
-reaches a tenant until you've read it and signed off. Depending on your
-program setup, we provide the letters finished and ready to send, or as
-files your team uses to produce them. Either way, they go out from your own
-property management software, so they arrive from a name your tenants
-already recognize.
+And the tenant announcement letters and marketing materials? Easy. You
+approve them first — nothing reaches a tenant until you've read it and
+signed off. Depending on your program setup, we provide the materials
+finished and ready to send, or we provide the files and your team produces
+them in-house. Either way, they go out from your own property management
+software, so they arrive from a name your tenants already recognize.
 
 **[Knowledge Check 3]**
 
@@ -140,15 +146,28 @@ anything until the documentation is complete. Photos first, cleanup second.
 
 Encourage them to open the claim right away and send documents in
 afterwards — waiting until everything is gathered is exactly how people
-miss the thirty-day window. And once a claim is open, keep every
-conversation about it inside the claims portal, not email. Everything in
-the portal lands in the claim file. Email is where details go missing.
+miss the thirty-day window.
+
+Now, communication — this one's important. Once a claim is open, keep every
+conversation about it **inside the claims portal**. The portal is the
+preferred workflow, and there's a good reason: everything you put there
+lands directly in the claim file where the adjuster sees it. Email sits
+outside that file, which is exactly how details get missed.
 
 What happens next? The moment a claim is submitted, a claim number is
-issued and the tenant gets an automatic confirmation email — that's the one
-automatic email in the process. After that, updates come from the adjuster
-as the claim moves, and if you have claims portal access, you can check
-status there any time.
+issued and the tenant gets a confirmation email — and that is the *only*
+automated email in the process. Everything after that comes from the
+adjuster, who sends updates as the claim needs them. So please don't tell a
+tenant they'll get automatic notifications at every stage. They won't.
+What they *can* do, if they have portal access, is check the claim's status
+in the portal any time.
+
+A word on portal access itself, because managers ask: it is not one login
+per location. Access is structured around your portfolio setup, your
+management structure, and some system limitations — so some organizations
+have a single login covering several locations, and others are split up
+differently. If you're not sure how yours is configured, ask Teon rather
+than assuming.
 
 Live adjusters are available Monday through Friday, seven A-M to five P-M
 Arizona time. And when a tenant asks "when will I get paid?" — here's the
@@ -158,7 +177,73 @@ estimate a reimbursement amount — even to be helpful! "I'm not the right
 person to put a number on that, but the adjuster will walk you through it."
 That's the perfect answer. Memorize it.
 
+And here's how we'd describe our claims service honestly: it's handled by a
+dedicated claims team who know your program, with real adjusters you can
+reach by name during business hours — not an anonymous call center queue.
+That's the promise worth making, because it's the one we keep.
+
 **[Knowledge Check 4]**
+
+## Section 5 — The Tenant Opt-Out Process
+
+Last section — and it's the one your front desk will use most often.
+
+A tenant who already carries their own insurance is allowed to opt out.
+They do it online at myownpolicy.com, or by email. And either route ends
+the same way: we have to be able to *verify* the policy from the photo they
+send. That single point is what almost every failed opt-out comes down to.
+
+Let's talk about the clock. The tenant has **ten days** from the day they
+move in and sign the lease to get us a policy we can verify. If those ten
+days pass without one, they're automatically enrolled in the protection
+plan. So say it out loud at the counter — don't leave it to the paperwork.
+It's a short window, and a tenant who means to do it later often doesn't.
+If they've got their declaration page on their phone, the fastest thing in
+the world is to have them send it right there while they're standing in
+front of you.
+
+Now — the photo. This is the part to get right. It has to clearly show
+three things, all readable, in one image: the **insurance company**, the
+**policy number**, and the **expiration date**. All three. If any one of
+them is missing, cut off, or blurry, the policy cannot be added to the
+tenant's account and the opt-out does not go through. The declaration page
+normally shows all three in a single shot — so that's the one to ask for.
+
+The steps are simple. One: the tenant goes to myownpolicy.com and enters
+their information. Two: they attach that photo. Three: our internal team
+reviews opt-out submissions and the support inbox Monday through Friday,
+and once the three details are verified, the policy is added to their
+account.
+
+If a tenant can't get the upload to work, they email it instead — same
+process, same three details, and it's reviewed the same way. And that email
+address works for *you*, too: you can use it any time to confirm which of
+your tenants have actually sent their policies in.
+
+Here's something that saves everyone a headache. When a tenant's own policy
+is about to run out, they get an expiration notice from us — sent from
+myownpolicy.com, **ten days before their policy expires**. That's the
+tenant's cue to send us their renewed declaration page before the old one
+lapses. It's why you're not sitting there reviewing insurance records by
+hand anymore. The system watches the dates for you.
+
+Two more things. First, a tenant can opt out at *any* time — the ten days
+is the window for avoiding enrollment in the first place, not a door that
+locks behind them. Same process, same three details. But be straight about
+the money, because it's the very next question every single time: the plan
+is not pro-rated. A full month is charged whether the tenant is on it for
+one day or the whole month, and there's no partial refund. Saying that
+plainly at the counter is so much easier than explaining it afterwards.
+
+Second — the exclusion list. Some units should never get an opt-out notice
+at all: tenants who've been grandfathered in, company units, and charity
+units. Those go on an exclusion list, and once a tenant is on it they're
+never sent an opt-out notification — no notice, no ten-day clock, no
+automatic enrollment. Setting it up is one email to Teon Delacruz with the
+list of tenants to exclude. Do it before launch, so nobody hears from us
+who shouldn't.
+
+**[Knowledge Check 5]**
 
 ## Close
 
