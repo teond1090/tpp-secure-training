@@ -1,40 +1,12 @@
 {
-  "note": "Source renders for this course \u2014 presenter-style delivery: deliberate gestures toward the slide, hands settling between points. fetch-videos.yml pulls these into media/ on demand. Durations are filled in as each render completes.",
+  "note": "Temporary: the presenter-style preview render only, fetched on this branch so main is untouched.",
   "files": [
     {
-      "name": "part-1.webm",
-      "section": "Welcome + Why TPP Secure Exists",
-      "video_id": "c6ca37c624f9ebd14b15f5e59cc05872",
+      "name": "preview-presenter.webm",
+      "section": "Opening, presenter-style delivery (preview)",
+      "video_id": "2d6317edf2c3d5acf092018d47f9b40f",
       "seconds": null,
-      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/c6ca37c624f9ebd14b15f5e59cc05872.webm"
-    },
-    {
-      "name": "part-2.webm",
-      "section": "Plans & Presenting",
-      "video_id": "60a6f0153a8a359f2d3811149999301e",
-      "seconds": null,
-      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/60a6f0153a8a359f2d3811149999301e.webm"
-    },
-    {
-      "name": "part-3.webm",
-      "section": "Coverage & Exclusions",
-      "video_id": "7900bf79c5db24db5188fa80e1dbd57c",
-      "seconds": null,
-      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/7900bf79c5db24db5188fa80e1dbd57c.webm"
-    },
-    {
-      "name": "part-4.webm",
-      "section": "Filing a Claim",
-      "video_id": "1eb1651b27a76cebbde62d1d1676ddec",
-      "seconds": null,
-      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/1eb1651b27a76cebbde62d1d1676ddec.webm"
-    },
-    {
-      "name": "part-5.webm",
-      "section": "Opt-Out Process + Close",
-      "video_id": "1e86ac54140157b6d8de055954189e43",
-      "seconds": null,
-      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/1e86ac54140157b6d8de055954189e43.webm"
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/2d6317edf2c3d5acf092018d47f9b40f.webm"
     }
   ]
 }
