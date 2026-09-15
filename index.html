@@ -401,17 +401,21 @@ const QUIZZES = [
 let TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
 
 /* =====================================================================
-   OPT-OUT MODULE — shown only on a customer link, e.g.  ?client=protego
+   OPT-OUT MODULE — shown only on a customer link, e.g.  ?client=tpp
 
-   The opt-out process is not in the recorded video, so it runs as a final
-   module after it: read it, then answer its knowledge check before the
-   certificate unlocks. Without a recognised ?client= none of this loads
-   and the course behaves exactly as it always has.
+   The opt-out process is now narrated in the video itself, as Section 5,
+   and is examined by the fifth knowledge check. The standalone reading
+   module it used to run as is retired; these details stay because the
+   contact block below still reads from them. Without a recognised
+   ?client= none of this loads and the course behaves as it always has.
    ===================================================================== */
 const OPTOUT_CLIENTS = {
-  protego: { name:'TPP Training Videos', site:'myownpolicy.com', email:'support@myownpolicy.com',
-             days:10, csm:'Teon Delacruz', csmEmail:'tdelacruz@tenantpropertyprotection.com' }
+  tpp: { name:'TPP Training Videos', site:'myownpolicy.com', email:'support@myownpolicy.com',
+         days:10, csm:'Teon Delacruz', csmEmail:'tdelacruz@tenantpropertyprotection.com' }
 };
+/* Links shared before the rebrand carry ?client=protego. Alias it rather
+   than break them — same configuration, TPP branding throughout. */
+OPTOUT_CLIENTS.protego = OPTOUT_CLIENTS.tpp;
 const OO = (function(){
   try {
     const id = new URLSearchParams(location.search).get('client');
