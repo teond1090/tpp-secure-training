@@ -19,9 +19,9 @@ import imageio_ffmpeg
 
 SRC_W, SRC_H = 1920, 1080
 OUT_W, OUT_H = 1920, 1080
-SCALE     = 0.78            # her height on the slide: 0.78 * 1080 = 842 px
-CENTER_X  = 1560            # where her body centre stands: middle of the right column
-KEY_LUMA  = 6               # above this is not backdrop (backdrop measures 0)
+SCALE     = 0.76            # her height on the slide: 0.76 * 1080 = 821 px
+CENTER_X  = 1590            # where her body centre stands: in the right column, clear of the slide's photos
+KEY_LUMA  = 3               # above this is not backdrop (backdrop measures exactly 0)
 ERODE     = 2               # at half resolution: ~4 source px of dark fringe dropped
 FEATHER   = 0.9             # sigma at half resolution of the edge softening
 FF = imageio_ffmpeg.get_ffmpeg_exe()
@@ -41,13 +41,15 @@ def matte(frame):
     """
     small = frame[::2, ::2].max(axis=2)
     fg = small > KEY_LUMA
+    # close first: the blazer's darkest edge pixels fall under the key and
+    # would leave a ragged outline; a 7x7 close (14 source px) smooths it
+    fg = ndimage.binary_closing(fg, structure=np.ones((7, 7)))
     # only what is connected to the bottom edge is her; stray specks are not
     labels, n = ndimage.label(fg)
     if n:
         keep = np.unique(labels[-1, :]); keep = keep[keep > 0]
         if len(keep):
             fg = np.isin(labels, keep)
-    fg = ndimage.binary_closing(fg, structure=np.ones((5, 5)))     # pinholes in the blazer and hair
     if ERODE:
         fg = ndimage.binary_erosion(fg, iterations=ERODE)          # the black edge blend
     return np.clip(ndimage.gaussian_filter(fg.astype(np.float32), FEATHER), 0, 1)
