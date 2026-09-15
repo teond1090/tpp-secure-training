@@ -1,0 +1,66 @@
+name: Generate Kling B-roll
+
+# Generates the short B-roll clips listed in kling/clips.json and commits them
+# to media/broll/, where tools/enhance_video.py cuts them in between slides.
+#
+# The runner does this rather than the authoring sandbox because the sandbox's
+# network policy refuses every Kling host (403 on CONNECT). The runner has open
+# outbound access, exactly as it does for the HeyGen renders.
+#
+# SETUP — one time, before the first run:
+#   Settings > Secrets and variables > Actions > New repository secret
+#   Name:  KLING_API_KEY
+#   Value: your Kling key, or "accesskey:secretkey" if your account issued a pair
+#
+# The key is never written to the repository. It is read from the secret at run
+# time, and GitHub masks it in the logs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma-separated clip names to generate (blank = all)'
+        required: false
+        default: ''
+      base_url:
+        description: 'Kling API base URL'
+        required: false
+        default: 'https://api-singapore.klingai.com'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyJWT
+        run: pip install --quiet pyjwt requests
+
+      - name: Generate clips
+        env:
+          KLING_API_KEY: ${{ secrets.KLING_API_KEY }}
+          ONLY:          ${{ inputs.only }}
+          BASE_URL:      ${{ inputs.base_url }}
+        run: |
+          if [ -z "${KLING_API_KEY:-}" ]; then
+            echo "::error::KLING_API_KEY is not set. Add it under"
+            echo "::error::Settings > Secrets and variables > Actions > New repository secret"
+            exit 1
+          fi
+          python kling/generate.py
+
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A media/broll/
+          git diff --cached --quiet && { echo "nothing new"; exit 0; }
+          git commit -m "Generate Kling B-roll clips into media/broll/"
+          git push

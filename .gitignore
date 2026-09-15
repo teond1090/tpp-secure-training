@@ -1,0 +1,6 @@
+
+# Never commit an API key. Kling's goes in the KLING_API_KEY repository
+# secret; these repos are public.
+*.key
+kling/*.local.json
+.env
