@@ -4,3 +4,4 @@
 *.key
 kling/*.local.json
 .env
+__pycache__/
