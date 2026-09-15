@@ -26,7 +26,8 @@
         "until": 3.5,
         "x": 1440,
         "note": "this render opens with a grey block at the right for ~3s; black it out around her hand"
-      }
+      },
+      "title": "Why TPP Secure Exists"
     },
     {
       "name": "part-2",
@@ -44,7 +45,8 @@
           "at": 0.46,
           "img": "06-present.png"
         }
-      ]
+      ],
+      "title": "Plans & Presenting"
     },
     {
       "name": "part-3",
@@ -66,7 +68,8 @@
           "at": 0.6,
           "img": "11-decpage.png"
         }
-      ]
+      ],
+      "title": "Coverage & Exclusions"
     },
     {
       "name": "part-4",
@@ -84,7 +87,8 @@
           "at": 0.75,
           "img": "14-claims-timing.png"
         }
-      ]
+      ],
+      "title": "Filing a Claim"
     },
     {
       "name": "part-5",
@@ -114,7 +118,11 @@
           "at": 0.95,
           "img": "20-contact.png"
         }
-      ]
+      ],
+      "title": "The Tenant Opt-Out Process"
     }
-  ]
-}\n
+  ],
+  "course": "TPP Secure",
+  "accent": "#B01824",
+  "navy": "#16233F"
+}
