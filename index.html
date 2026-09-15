@@ -435,6 +435,7 @@ vid.addEventListener('loadedmetadata',()=>{
 
 /* the furthest point the learner may reach until the next check is passed */
 function gateTime(){
+  if(segMode) return Infinity;      /* a segment is a whole section; no mid-file gate */
   if(!vid.duration) return Infinity;
   for(let i=0;i<QUIZZES.length;i++){ if(!done[i]) return QUIZZES[i].at*vid.duration; }
   return Infinity;
@@ -513,6 +514,29 @@ document.addEventListener('keydown',e=>{
 /* enforce the gate during playback and on any external seek */
 vid.addEventListener('timeupdate',()=>{ updateUI(); enforceGate(); showSlideFor(vid.currentTime); });
 
+/* ---------- segment mode ----------
+   The course can run either as one long video with time-gated checks (the
+   original behaviour, used while SEGMENTS is empty) or as one file per
+   section with its knowledge check between segments.
+
+   Segment mode exists because HeyGen caps a render at 5,000 characters of
+   script, so a 12-minute course arrives as five files. Rather than stitching
+   them, the player treats each as a section: play, check, advance. That also
+   removes the need to guess where a section boundary falls inside a single
+   timeline. */
+const SEGMENTS = [];            /* [{src, slides:[{at, img}]}] — one per section */
+const segMode = SEGMENTS.length > 0;
+let segIdx = 0;
+
+function loadSegment(i){
+  if(i >= SEGMENTS.length) return;
+  segIdx = i;
+  curSlide = -1;
+  vid.src = SEGMENTS[i].src;
+  vid.load();
+}
+function segSlides(){ return segMode ? (SEGMENTS[segIdx].slides || []) : SLIDES; }
+
 /* ---------- slide track ----------
    SLIDES lists {at: fraction of runtime, img: filename}. Fractions rather than
    seconds so a re-recorded narration of a different length still lines up.
@@ -523,20 +547,23 @@ const SLIDES = [];
 const slideImg = document.getElementById('slideImg');
 let curSlide = -1;
 function showSlideFor(t){
-  if(!SLIDES.length || !vid.duration) return;
+  const list = segSlides();
+  if(!list.length || !vid.duration) return;
   const f = t / vid.duration;
   let idx = 0;
-  for(let i=0;i<SLIDES.length;i++){ if(f >= SLIDES[i].at) idx = i; }
+  for(let i=0;i<list.length;i++){ if(f >= list[i].at) idx = i; }
   if(idx === curSlide) return;
   curSlide = idx;
-  slideImg.src = SLIDE_BASE + SLIDES[idx].img;
+  slideImg.src = SLIDE_BASE + list[idx].img;
 }
-if (SLIDES.length){
+if (SLIDES.length || (segMode && (SEGMENTS[0].slides||[]).length)){
   document.getElementById('player').classList.add('staged');
   slideImg.style.display = '';
-  slideImg.src = SLIDE_BASE + SLIDES[0].img;
+  const first = segMode ? SEGMENTS[0].slides[0].img : SLIDES[0].img;
+  slideImg.src = SLIDE_BASE + first;
   curSlide = 0;
 }
+if (segMode) loadSegment(0);
 vid.addEventListener('seeking',()=>{ const g=gateTime(); if(vid.currentTime>g){ vid.currentTime=Math.max(0,g-1.5); } });
 function enforceGate(){
   const g=gateTime();
@@ -612,6 +639,12 @@ quizContinue.onclick=()=>{
   done[activeQuiz]=true;
   segs[activeQuiz].classList.add('done');
   overlay.classList.remove('show');
+  if(segMode){
+    activeQuiz=-1; updateUI();
+    if(segIdx+1 < SEGMENTS.length){ loadSegment(segIdx+1); vid.play(); }
+    else showComplete();
+    return;
+  }
   activeQuiz=-1;
   updateUI();
   vid.play();
@@ -805,7 +838,10 @@ if (false) {
 }
 
 /* ---------- completion + certificate ---------- */
-vid.addEventListener('ended',()=>{ if(done.every(Boolean)) showComplete(); });
+vid.addEventListener('ended',()=>{
+  if(segMode){ openQuiz(segIdx); return; }   /* section over -> its knowledge check */
+  if(done.every(Boolean)) showComplete();
+});
 function showComplete(){
   if (OO && !ooDone) {                       /* module first, certificate after */
     if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
