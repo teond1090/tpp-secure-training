@@ -1,32 +1,78 @@
 {
-  "seconds": 644.52,
+  "seconds": 661.82,
   "crf": 23,
-  "bytes": 77998232,
+  "bytes": 91146228,
+  "voice_polish": false,
   "sections": [
     {
       "part": "part-1.mp4",
+      "kind": "section",
       "start": 0.0,
-      "seconds": 115.02
+      "seconds": 117.0,
+      "gate": null
+    },
+    {
+      "part": "check-1.mp4",
+      "kind": "bumper",
+      "start": 116.75,
+      "seconds": 2.4,
+      "gate": 117.95
     },
     {
       "part": "part-2.mp4",
-      "start": 114.77,
-      "seconds": 87.63
+      "kind": "section",
+      "start": 118.65,
+      "seconds": 88.16,
+      "gate": null
+    },
+    {
+      "part": "check-2.mp4",
+      "kind": "bumper",
+      "start": 206.31,
+      "seconds": 2.4,
+      "gate": 207.51
     },
     {
       "part": "part-3.mp4",
-      "start": 201.9,
-      "seconds": 100.97
+      "kind": "section",
+      "start": 208.21,
+      "seconds": 102.12,
+      "gate": null
+    },
+    {
+      "part": "check-3.mp4",
+      "kind": "bumper",
+      "start": 309.83,
+      "seconds": 2.4,
+      "gate": 311.03
     },
     {
       "part": "part-4.mp4",
-      "start": 302.37,
-      "seconds": 136.73
+      "kind": "section",
+      "start": 311.73,
+      "seconds": 137.08,
+      "gate": null
+    },
+    {
+      "part": "check-4.mp4",
+      "kind": "bumper",
+      "start": 448.31,
+      "seconds": 2.4,
+      "gate": 449.51
     },
     {
       "part": "part-5.mp4",
-      "start": 438.6,
-      "seconds": 206.17
+      "kind": "section",
+      "start": 450.21,
+      "seconds": 209.96,
+      "gate": null
+    },
+    {
+      "part": "check-5.mp4",
+      "kind": "bumper",
+      "start": 659.67,
+      "seconds": 2.4,
+      "gate": 660.87
     }
   ]
 }
