@@ -1,0 +1,48 @@
+name: Fetch training videos
+
+# Pulls the rendered narration segments listed in videos.json into media/.
+# The runner has open outbound access, so it can reach HeyGen's file servers
+# directly — which the authoring sandbox cannot.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download each segment
+        run: |
+          set -euo pipefail
+          mkdir -p media
+          fail=0
+          while read -r name url; do
+            echo "::group::$name"
+            code=$(curl -sS -L -w '%{http_code}' -o "media/$name" "$url" || echo 000)
+            size=$(stat -c%s "media/$name" 2>/dev/null || echo 0)
+            echo "HTTP $code, $size bytes"
+            # A short body is an error page, not a video.
+            if [ "$code" != "200" ] || [ "$size" -lt 100000 ]; then
+              echo "FAILED: $name"
+              head -c 300 "media/$name" || true
+              rm -f "media/$name"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done < <(jq -r '.files[] | "\(.name) \(.url)"' videos.json)
+          echo "--- downloaded ---"
+          ls -la media/ || true
+          exit $fail
+
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A media/
+          git diff --cached --quiet && { echo "nothing new"; exit 0; }
+          git commit -m "Fetch rendered training segments into media/"
+          git push

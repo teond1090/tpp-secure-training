@@ -1,0 +1,15 @@
+{
+  "note": "Source renders for this course. fetch-videos.yml pulls these into media/ on demand, because the authoring sandbox cannot reach HeyGen's file servers.",
+  "files": [
+    { "name": "part-1.webm", "section": "Welcome + Why TPP Secure Exists", "seconds": 114.991,
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/f63d55594e2c550a37d7ab060b5c7d94.webm" },
+    { "name": "part-2.webm", "section": "Plans & Presenting", "seconds": 87.6147,
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/fb0c499a8db965f09d6916ecc030007e.webm" },
+    { "name": "part-3.webm", "section": "Coverage & Exclusions", "seconds": 100.937,
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/ecfa3f7b28f113ac76b8b719a523c975.webm" },
+    { "name": "part-4.webm", "section": "Filing a Claim", "seconds": 136.699,
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/4c91e7c127104678b18dc15dd87d8ded.webm" },
+    { "name": "part-5.webm", "section": "Opt-Out Process + Close", "seconds": 206.132,
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/399b15b92195178e630f172d999713c5.webm" }
+  ]
+}
