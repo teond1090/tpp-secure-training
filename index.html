@@ -362,6 +362,33 @@ const QUIZZES = [
     {q:"A tenant asks when their claim will be paid. What's accurate to say?",
      a:["Processing can take up to 30 days, though many claims are completed sooner","Every claim is paid within 72 hours","Payment is guaranteed by the end of the week"], c:0,
      e:"Never promise a payment timeline. Claims processing can take up to 30 days, although many claims are completed sooner. The adjuster keeps the tenant informed as the claim moves, and anyone with claims portal access can check a claim's status in the portal at any time."}
+  ]},
+  { at:0.99, title:"The Tenant Opt-Out Process", q:[
+    {q:"A tenant sends a photo of their policy to opt out. What must it show?",
+     a:["The insurance company, the policy number, and the expiration date",
+        "The tenant\u2019s name and unit number only",
+        "Just the name of the insurance company"], c:0,
+     e:"All three, readable, in one image. If any one is missing the policy cannot be added and the opt-out does not go through \u2014 which is why the declaration page is the thing to ask for."},
+    {q:"How long does a tenant have to get their policy to us?",
+     a:["10 days from the day they move in and sign the lease",
+        "30 days from move-in",
+        "Until the end of their first month"], c:0,
+     e:"Ten days from move-in and lease signing. If that passes without a policy we can verify, the tenant is automatically enrolled in the protection plan."},
+    {q:"When does a tenant receive the policy expiration notice?",
+     a:["10 days before their own policy expires, sent from myownpolicy.com",
+        "On the day the policy expires",
+        "Only if the manager requests it"], c:0,
+     e:"We email the tenant an expiration notice from myownpolicy.com 10 days before their policy expires, so they can send a renewed declaration page before the old one lapses."},
+    {q:"A tenant opts out on the 20th and asks for that month back. What do you tell them?",
+     a:["The plan is not pro-rated \u2014 the full month is charged, with no partial refund",
+        "They get a refund for the unused days",
+        "The charge is reversed automatically"], c:0,
+     e:"A full month is charged whether the tenant is on the plan for one day or the whole month. Saying so at the counter is much easier than explaining it afterwards."},
+    {q:"A tenant cannot get the upload on the site to work. What do you tell them?",
+     a:["Email it to support@myownpolicy.com with a photo of their declaration page",
+        "Tell them to try again next month",
+        "Nothing \u2014 they have missed their chance"], c:0,
+     e:"The email route works exactly the same way and is reviewed Monday to Friday. That same address also lets you confirm which tenants have sent theirs in."}
   ]}
 ];
 let TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
@@ -596,12 +623,11 @@ if (OO) {
     'You can pause, rewind and fast-forward freely. The video stops at four short knowledge checks, '
     + 'and one final module follows it — answer each one correctly to unlock your certificate.';
 }
-let ooDone = !OO;               /* nothing to pass when the module is off */
+let ooDone = true;              /* opt-out is narrated in the video and checked by Knowledge Check 5 */
 let ooFirstTryCounted = false;
 
-if (OO) {
+if (false) {
   const S = OO.site, E = OO.email, D = OO.days;
-  TOTAL_Q += 4;
 
   document.getElementById('ooLede').innerHTML =
     'The Tenant Opt-Out Process is part of this course — the process is the same whichever plan '
