@@ -147,7 +147,7 @@ def build_slide_track(ff, slides, total, slide_dir, tmp):
     return cur
 
 
-def compose(ff, seg, slide_track, out_path, preview=None, at=None):
+def compose(ff, seg, slide_track, out_path, preview=None, at=None, card_ready=False):
     """Overlay the cropped, graded, rounded presenter card onto the slide track."""
     dur_arg = ["-t", str(preview)] if preview else []
     # --at T: a single PNG frame, with the slide passed in as a still image
@@ -175,9 +175,11 @@ def compose(ff, seg, slide_track, out_path, preview=None, at=None):
         f"if(gt(abs(X-(W/2)),W/2-{r})*gt(abs(Y-(H/2)),H/2-{r}),"
         f"if(lte(pow(abs(X-(W/2))-(W/2-{r}),2)+pow(abs(Y-(H/2))-(H/2-{r}),2),{r*r}),255,0),255)"
     )
+    # a tracked card from track_presenter.py is already CARD_W x CARD_H
+    framing = "" if card_ready else (
+        f"crop={SRC_CROP_W}:{SRC_CROP_H}:{SRC_CROP_X}:{SRC_CROP_Y},scale={CARD_W}:{CARD_H},")
     filt = (
-        f"[1:v]crop={SRC_CROP_W}:{SRC_CROP_H}:{SRC_CROP_X}:{SRC_CROP_Y},"
-        f"scale={CARD_W}:{CARD_H},"
+        f"[1:v]{framing}"
         f"eq=brightness=0.04:contrast=1.07:saturation=1.06,"      # lift a flat render
         f"format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='{inside}'[card];"
         f"[0:v][card]overlay={CARD_X}:{CARD_Y}:format=auto[v]"
@@ -255,6 +257,8 @@ def main():
     ap.add_argument("--preview", type=float, help="render only the first N seconds")
     ap.add_argument("--card", help="card size as WxH (default 600x600)")
     ap.add_argument("--at", type=float, help="write one PNG still at this second instead of a video")
+    ap.add_argument("--no-track", action="store_true",
+                    help="fixed centred crop instead of the virtual camera in track_presenter.py")
     ap.add_argument("--join", metavar="NAME", help="after the parts, join them into NAME.mp4 in --out")
     ap.add_argument("--join-only", action="store_true", help="skip compositing; join the part files already in --out")
     args = ap.parse_args()
@@ -290,7 +294,19 @@ def main():
         with tempfile.TemporaryDirectory() as tmp:
             track = build_slide_track(ff, seg["slides"], total, slide_dir, tmp)
             out_path = os.path.join(args.out, f"{name}.mp4")
-            compose(ff, src, track, out_path, args.preview)
+            presenter, ready = src, False
+            if not args.no_track:
+                # the virtual camera: follows her hands so none leaves the card
+                sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                import track_presenter
+                presenter = os.path.join(tmp, "card.mp4")
+                st = track_presenter.track(src, presenter, None, args.preview,
+                                           report=os.path.join(args.out, f"{name}.track.json"),
+                                           clean=seg.get("clean"))
+                print(f"  camera: tight {st['tight_share']*100:.0f}% of the time, "
+                      f"widest {st['max_width']:.0f}px")
+                ready = True
+            compose(ff, presenter, track, out_path, args.preview, card_ready=ready)
         size = os.path.getsize(out_path) / 1e6
         print(f"  -> {out_path}  ({size:.1f} MB)")
 

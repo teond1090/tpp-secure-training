@@ -21,7 +21,12 @@
           "at": 0.7,
           "img": "04-fmv.png"
         }
-      ]
+      ],
+      "clean": {
+        "until": 3.5,
+        "x": 1440,
+        "note": "this render opens with a grey block at the right for ~3s; black it out around her hand"
+      }
     },
     {
       "name": "part-2",
@@ -112,4 +117,4 @@
       ]
     }
   ]
-}
+}\n
