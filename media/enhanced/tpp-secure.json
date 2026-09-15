@@ -1,0 +1,32 @@
+{
+  "seconds": 644.52,
+  "crf": 23,
+  "bytes": 77998232,
+  "sections": [
+    {
+      "part": "part-1.mp4",
+      "start": 0.0,
+      "seconds": 115.02
+    },
+    {
+      "part": "part-2.mp4",
+      "start": 114.77,
+      "seconds": 87.63
+    },
+    {
+      "part": "part-3.mp4",
+      "start": 201.9,
+      "seconds": 100.97
+    },
+    {
+      "part": "part-4.mp4",
+      "start": 302.37,
+      "seconds": 136.73
+    },
+    {
+      "part": "part-5.mp4",
+      "start": 438.6,
+      "seconds": 206.17
+    }
+  ]
+}

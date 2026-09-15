@@ -205,7 +205,7 @@
 
   <div class="player" id="player">
     <img id="slideImg" alt="" style="display:none">
-    <video id="vid" playsinline preload="metadata" src="training-video.mp4"></video>
+    <video id="vid" playsinline preload="metadata" src="media/enhanced/tpp-secure.mp4"></video>
     <div class="bigplay" id="bigplay"><div class="btn"></div></div>
     <div id="vidErr" style="display:none;position:absolute;inset:0;background:#101018;color:#fff;
       align-items:center;justify-content:center;text-align:center;padding:24px;font-size:15px;
@@ -258,7 +258,7 @@
       </div>
     </div>
   </div>
-  <p class="hint" id="playerHint">You can pause, rewind and fast-forward freely. The video stops at four short knowledge checks — answer each one correctly to unlock the rest.</p>
+  <p class="hint" id="playerHint">You can pause, rewind and fast-forward freely. The video stops at five short knowledge checks — answer each one correctly to unlock the rest.</p>
 
   <div class="panel" id="optoutPanel">
     <h2>One more module</h2>
@@ -319,8 +319,11 @@
 
 <script>
 /* ---------- knowledge checks ---------- */
+/* Gate positions are fractions of the finished video, set from the section
+   boundaries tools/enhance_video.py --join reports (each just before the next
+   section fades in). Re-derive them if the video is rebuilt. */
 const QUIZZES = [
-  { at:0.22114, title:"Why TPP Secure Exists", q:[
+  { at:0.17714, title:"Why TPP Secure Exists", q:[
     {q:"When speaking with a tenant, should you ever refer to TPP Secure as \"insurance\"?",
      a:["No — it's a protection plan, not insurance","Yes, it's just another word for insurance","Only when they ask about coverage"], c:0,
      e:"Per the California Supreme Court (Heckard v. A-1 Self Storage), protection plans are NOT insurance and aren't regulated by the Department of Insurance. Never call it insurance."},
@@ -331,7 +334,7 @@ const QUIZZES = [
      a:["At fair market value","At full replacement cost — brand-new items regardless of age","At a flat percentage of the plan limit"], c:0,
      e:"Claims are processed based on fair market value. That is different from full replacement cost — which would mean replacing items with new items of similar quality — and the plan does not settle claims that way."}
   ]},
-  { at:0.51916, title:"Plans & Presenting", q:[
+  { at:0.31233, title:"Plans & Presenting", q:[
     {q:"A customer wants coverage that doesn't match the plans shown in this training. What's true?",
      a:["Coverage levels and pricing are flexible — we can accommodate most needs and requests","The three plan limits are fixed and cannot be changed","They would have to find a different provider"], c:0,
      e:"The plans shown here are examples, not a fixed rate card. Our coverage levels and pricing are flexible and we can accommodate most customer needs and requests — so if what they need isn't on the list, just ask."},
@@ -342,7 +345,7 @@ const QUIZZES = [
      a:["$5,000 and above","Every plan, no exceptions","Only plans over $10,000"], c:0,
      e:"Plans of $5,000 and above require a short application with an inventory list and photos, so underwriters can establish a baseline before anything happens."}
   ]},
-  { at:0.76711, title:"Coverage & Exclusions", q:[
+  { at:0.46821, title:"Coverage & Exclusions", q:[
     {q:"Which of these is NOT covered?",
      a:["Flood","Fire","Burglary"], c:0,
      e:"Flood is not covered — that's only available through the National Flood Insurance Program. Also NOT covered: theft / mysterious disappearance, and mold. Fire and burglary ARE covered."},
@@ -359,7 +362,7 @@ const QUIZZES = [
      a:["You approve them first, then they go out from your own property management software","TPP emails them directly to your tenants","You have to write them yourself from scratch"], c:0,
      e:"Nothing reaches a tenant until you've signed off. Depending on your program setup, we provide finished, ready-to-send letters or the files your team uses to produce them — either way, they're sent from your own property management software so they arrive from a name your tenants recognize. Teon Delacruz handles any wording or timing changes you want."}
   ]},
-  { at:0.90539, title:"Filing a Claim", q:[
+  { at:0.67958, title:"Filing a Claim", q:[
     {q:"How long does a tenant have to file a claim, and where?",
      a:["30 days from discovery, online at tppclaims.com","90 days, by calling the office","7 days, by mailing a form"], c:0,
      e:"30 days from the date of discovery, filed online at tppclaims.com. The tenant gathers their own receipts and documentation and submits the claim themselves — the manager's role is the incident report and supporting paperwork."},
@@ -538,33 +541,8 @@ vid.addEventListener('timeupdate',()=>{ updateUI(); enforceGate(); showSlideFor(
    them, the player treats each as a section: play, check, advance. That also
    removes the need to guess where a section boundary falls inside a single
    timeline. */
-const SEGMENTS = [
-  { src:'media/part-1.webm', slides:[
-      {at:0,    img:'01-title.png'},
-      {at:0.25, img:'02-not-insurance.png'},
-      {at:0.45, img:'03-gap.png'},
-      {at:0.70, img:'04-fmv.png'} ]},
-  { src:'media/part-2.webm', slides:[
-      {at:0,    img:'05-rates.png'},
-      {at:0.30, img:'07-birdseye.png'},
-      {at:0.46, img:'06-present.png'} ]},
-  { src:'media/part-3.webm', slides:[
-      {at:0,    img:'08-covered.png'},
-      {at:0.15, img:'09-not-covered.png'},
-      {at:0.32, img:'10-burglary.png'},
-      {at:0.60, img:'11-decpage.png'} ]},
-  { src:'media/part-4.webm', slides:[
-      {at:0,    img:'12-file-claim.png'},
-      {at:0.35, img:'13-claims-comm.png'},
-      {at:0.75, img:'14-claims-timing.png'} ]},
-  { src:'media/part-5.webm', slides:[
-      {at:0,    img:'15-optout.png'},
-      {at:0.24, img:'16-three-details.png'},
-      {at:0.55, img:'17-expiry.png'},
-      {at:0.70, img:'19-billing.png'},
-      {at:0.84, img:'18-exclusion.png'},
-      {at:0.95, img:'20-contact.png'} ]}
-];
+const SEGMENTS = [];   /* the finished video is one file with the slides baked in;
+                          the five HeyGen renders only exist for the compositor in tools/ */
 const segMode = SEGMENTS.length > 0;
 let segIdx = 0;
 
@@ -693,7 +671,7 @@ quizContinue.onclick=()=>{
 /* ---------- opt-out module ---------- */
 if (OO) {
   document.getElementById('playerHint').textContent =
-    'You can pause, rewind and fast-forward freely. The video stops at four short knowledge checks, '
+    'You can pause, rewind and fast-forward freely. The video stops at five short knowledge checks, '
     + 'and one final module follows it — answer each one correctly to unlock your certificate.';
 }
 let ooDone = true;              /* opt-out is narrated in the video and checked by Knowledge Check 5 */
