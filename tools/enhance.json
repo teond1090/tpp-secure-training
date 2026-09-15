@@ -1,0 +1,115 @@
+{
+  "slide_dir": "/home/user/tpp-onboarding-portal/slides/secure",
+  "segments": [
+    {
+      "name": "part-1",
+      "video": "media/part-1.webm",
+      "slides": [
+        {
+          "at": 0,
+          "img": "01-title.png"
+        },
+        {
+          "at": 0.25,
+          "img": "02-not-insurance.png"
+        },
+        {
+          "at": 0.45,
+          "img": "03-gap.png"
+        },
+        {
+          "at": 0.7,
+          "img": "04-fmv.png"
+        }
+      ]
+    },
+    {
+      "name": "part-2",
+      "video": "media/part-2.webm",
+      "slides": [
+        {
+          "at": 0,
+          "img": "05-rates.png"
+        },
+        {
+          "at": 0.3,
+          "img": "07-birdseye.png"
+        },
+        {
+          "at": 0.46,
+          "img": "06-present.png"
+        }
+      ]
+    },
+    {
+      "name": "part-3",
+      "video": "media/part-3.webm",
+      "slides": [
+        {
+          "at": 0,
+          "img": "08-covered.png"
+        },
+        {
+          "at": 0.15,
+          "img": "09-not-covered.png"
+        },
+        {
+          "at": 0.32,
+          "img": "10-burglary.png"
+        },
+        {
+          "at": 0.6,
+          "img": "11-decpage.png"
+        }
+      ]
+    },
+    {
+      "name": "part-4",
+      "video": "media/part-4.webm",
+      "slides": [
+        {
+          "at": 0,
+          "img": "12-file-claim.png"
+        },
+        {
+          "at": 0.35,
+          "img": "13-claims-comm.png"
+        },
+        {
+          "at": 0.75,
+          "img": "14-claims-timing.png"
+        }
+      ]
+    },
+    {
+      "name": "part-5",
+      "video": "media/part-5.webm",
+      "slides": [
+        {
+          "at": 0,
+          "img": "15-optout.png"
+        },
+        {
+          "at": 0.24,
+          "img": "16-three-details.png"
+        },
+        {
+          "at": 0.55,
+          "img": "17-expiry.png"
+        },
+        {
+          "at": 0.7,
+          "img": "19-billing.png"
+        },
+        {
+          "at": 0.84,
+          "img": "18-exclusion.png"
+        },
+        {
+          "at": 0.95,
+          "img": "20-contact.png"
+        }
+      ]
+    }
+  ]
+}
