@@ -29,6 +29,16 @@
   /* ---------- player ---------- */
   .player{position:relative;background:#000;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
   .player video{display:block;width:100%;height:auto;background:#000}
+  /* Slide stage. The avatar renders centred and HeyGen gives no way to move it,
+     so the slide is painted underneath and the presenter is docked over the right
+     edge here instead — the same layout as the original recorded courses. */
+  .player.staged{aspect-ratio:16/9;background:#fff}
+  .player.staged #slideImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+    background:#fff;z-index:1;transition:opacity .25s}
+  .player.staged #vid{position:absolute;right:0;bottom:0;width:31%;height:auto;z-index:2;
+    background:transparent;border-radius:0}
+  .player.staged.pip #vid{width:26%;right:14px;bottom:14px;border-radius:12px;
+    box-shadow:0 8px 28px rgba(0,0,0,.35)}
   .player:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center}
   .player:fullscreen video{max-height:100vh;width:100%;object-fit:contain}
 
@@ -184,6 +194,7 @@
   </div>
 
   <div class="player" id="player">
+    <img id="slideImg" alt="" style="display:none">
     <video id="vid" playsinline preload="metadata" src="training-video.mp4"></video>
     <div class="bigplay" id="bigplay"><div class="btn"></div></div>
     <div id="vidErr" style="display:none;position:absolute;inset:0;background:#101018;color:#fff;
@@ -473,7 +484,32 @@ document.addEventListener('keydown',e=>{
 });
 
 /* enforce the gate during playback and on any external seek */
-vid.addEventListener('timeupdate',()=>{ updateUI(); enforceGate(); });
+vid.addEventListener('timeupdate',()=>{ updateUI(); enforceGate(); showSlideFor(vid.currentTime); });
+
+/* ---------- slide track ----------
+   SLIDES lists {at: fraction of runtime, img: filename}. Fractions rather than
+   seconds so a re-recorded narration of a different length still lines up.
+   With SLIDES empty the player behaves exactly as it did before: plain video,
+   no slide layer, nothing to maintain. */
+const SLIDE_BASE = 'https://teond1090.github.io/tpp-onboarding-portal/slides/secure/';
+const SLIDES = [];
+const slideImg = document.getElementById('slideImg');
+let curSlide = -1;
+function showSlideFor(t){
+  if(!SLIDES.length || !vid.duration) return;
+  const f = t / vid.duration;
+  let idx = 0;
+  for(let i=0;i<SLIDES.length;i++){ if(f >= SLIDES[i].at) idx = i; }
+  if(idx === curSlide) return;
+  curSlide = idx;
+  slideImg.src = SLIDE_BASE + SLIDES[idx].img;
+}
+if (SLIDES.length){
+  document.getElementById('player').classList.add('staged');
+  slideImg.style.display = '';
+  slideImg.src = SLIDE_BASE + SLIDES[0].img;
+  curSlide = 0;
+}
 vid.addEventListener('seeking',()=>{ const g=gateTime(); if(vid.currentTime>g){ vid.currentTime=Math.max(0,g-1.5); } });
 function enforceGate(){
   const g=gateTime();

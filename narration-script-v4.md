@@ -8,8 +8,7 @@ Incorporates the Claims team / Shelly revision list:
 fair market value (not full replacement cost), no 72-hour payment promise
 (up to 30 days), only the filing email is automated, claims portal preferred
 over email, adjuster hours 7:00 AM - 5:00 PM Arizona, portal access is
-structured per portfolio (not one login per location), "Never Outsourced"
-repositioned, marketing materials language covers both delivery models,
+structured per portfolio (not one login per location),  marketing materials language covers both delivery models,
 tenant vs. manager responsibilities always explicit.
 
 Section 5 is the Tenant Opt-Out Process, now delivered in the video itself
@@ -177,10 +176,6 @@ estimate a reimbursement amount — even to be helpful! "I'm not the right
 person to put a number on that, but the adjuster will walk you through it."
 That's the perfect answer. Memorize it.
 
-And here's how we'd describe our claims service honestly: it's handled by a
-dedicated claims team who know your program, with real adjusters you can
-reach by name during business hours — not an anonymous call center queue.
-That's the promise worth making, because it's the one we keep.
 
 **[Knowledge Check 4]**
 
