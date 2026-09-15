@@ -35,8 +35,15 @@
   .player.staged{aspect-ratio:16/9;background:#fff}
   .player.staged #slideImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
     background:#fff;z-index:1;transition:opacity .25s}
-  .player.staged #vid{position:absolute;right:0;bottom:0;width:38%;height:auto;z-index:2;
-    background:transparent;border-radius:0}
+  /* HeyGen accepted the transparent request but delivered opaque video: the
+     presenter is matted onto solid black, not an alpha channel. Keying the
+     black out is not possible because her blazer is black too, so she is
+     framed as a deliberate studio card instead. object-fit crops the wide
+     empty margins so she fills the card rather than floating in it. */
+  .player.staged #vid{position:absolute;right:20px;bottom:20px;width:27%;aspect-ratio:3/4;
+    height:auto;z-index:2;object-fit:cover;object-position:center 20%;background:#000;
+    border-radius:16px;box-shadow:0 12px 38px rgba(12,18,32,.5);
+    border:2px solid rgba(255,255,255,.12)}
   .player.staged.pip #vid{width:26%;right:14px;bottom:14px;border-radius:12px;
     box-shadow:0 8px 28px rgba(0,0,0,.35)}
   .player:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center}
@@ -524,7 +531,33 @@ vid.addEventListener('timeupdate',()=>{ updateUI(); enforceGate(); showSlideFor(
    them, the player treats each as a section: play, check, advance. That also
    removes the need to guess where a section boundary falls inside a single
    timeline. */
-const SEGMENTS = [];            /* [{src, slides:[{at, img}]}] — one per section */
+const SEGMENTS = [
+  { src:'media/part-1.webm', slides:[
+      {at:0,    img:'01-title.png'},
+      {at:0.25, img:'02-not-insurance.png'},
+      {at:0.45, img:'03-gap.png'},
+      {at:0.70, img:'04-fmv.png'} ]},
+  { src:'media/part-2.webm', slides:[
+      {at:0,    img:'05-rates.png'},
+      {at:0.30, img:'07-birdseye.png'},
+      {at:0.46, img:'06-present.png'} ]},
+  { src:'media/part-3.webm', slides:[
+      {at:0,    img:'08-covered.png'},
+      {at:0.15, img:'09-not-covered.png'},
+      {at:0.32, img:'10-burglary.png'},
+      {at:0.60, img:'11-decpage.png'} ]},
+  { src:'media/part-4.webm', slides:[
+      {at:0,    img:'12-file-claim.png'},
+      {at:0.35, img:'13-claims-comm.png'},
+      {at:0.75, img:'14-claims-timing.png'} ]},
+  { src:'media/part-5.webm', slides:[
+      {at:0,    img:'15-optout.png'},
+      {at:0.24, img:'16-three-details.png'},
+      {at:0.55, img:'17-expiry.png'},
+      {at:0.70, img:'19-billing.png'},
+      {at:0.84, img:'18-exclusion.png'},
+      {at:0.95, img:'20-contact.png'} ]}
+];
 const segMode = SEGMENTS.length > 0;
 let segIdx = 0;
 
