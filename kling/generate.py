@@ -54,7 +54,12 @@ def api(method, path, **kw):
     if r.status_code >= 400:
         # Print the body — Kling explains refusals there, and it is the fastest
         # way to tell a wrong credential shape from an out-of-credit account.
-        raise SystemExit(f"HTTP {r.status_code} from {path}\n{r.text[:800]}")
+        hint = ""
+        if r.status_code == 401 and "3 parts" in r.text and ":" not in KEY:
+            hint = ("\n\nKling wants a signed JWT, so this account uses an Access Key + "
+                    "Secret Key pair. Set the KLING_API_KEY secret to  accesskey:secretkey  "
+                    "(both values from the Kling console, joined with a colon) and re-run.")
+        raise SystemExit(f"HTTP {r.status_code} from {path}\n{r.text[:800]}{hint}")
     return r.json()
 
 

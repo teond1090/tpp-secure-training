@@ -36,16 +36,36 @@ W, H = 1920, 1080
 
 # The presenter card, in output pixels. Matches the reserved column in the
 # slide layouts, so she never covers content.
-CARD_W, CARD_H = 560, 653
+# Square. The high-energy take opens her arms well past a portrait crop —
+# a 560x653 card cut a hand off in one frame in five. Square shows both
+# hands at almost the same size; anything wider shrinks her noticeably.
+CARD_W, CARD_H = 600, 600
 CARD_X, CARD_Y = W - CARD_W - 40, H - CARD_H - 40
+CARD_MARGIN = 40
 CARD_RADIUS = 28
 
 # How much of the source frame to keep. The avatar sits centred in a 16:9 frame
 # with wide empty margins; this crops to her.
 # Wide enough to keep her hands in frame when she gestures — a tighter crop
 # clips them at the card edge.
-SRC_CROP_W, SRC_CROP_H = 926, 1080
+SRC_CROP_W, SRC_CROP_H = 1080, 1080
 SRC_CROP_X, SRC_CROP_Y = (1920 - SRC_CROP_W) // 2, 0
+
+
+def set_card(spec):
+    """Re-derive the card and source crop from a WxH card size.
+
+    The crop always takes the full 1080 source height at the card's aspect,
+    centred — so a wider card shows more of her gesture range, at the cost of
+    rendering her smaller. --card 600x600 gives a square card, for instance.
+    """
+    global CARD_W, CARD_H, CARD_X, CARD_Y, SRC_CROP_W, SRC_CROP_H, SRC_CROP_X, SRC_CROP_Y
+    cw, ch = (int(v) for v in spec.lower().split("x"))
+    CARD_W, CARD_H = cw, ch
+    CARD_X, CARD_Y = W - cw - CARD_MARGIN, H - ch - CARD_MARGIN
+    SRC_CROP_H = 1080
+    SRC_CROP_W = min(1920, int(round(1080 * cw / ch)))
+    SRC_CROP_X, SRC_CROP_Y = (1920 - SRC_CROP_W) // 2, 0
 
 KENBURNS_ZOOM = 1.06      # how far each slide pushes in over its time on screen
 XFADE = 0.6               # seconds of cross-fade between slides
@@ -127,9 +147,26 @@ def build_slide_track(ff, slides, total, slide_dir, tmp):
     return cur
 
 
-def compose(ff, seg, slide_track, out_path, preview=None):
+def compose(ff, seg, slide_track, out_path, preview=None, at=None):
     """Overlay the cropped, graded, rounded presenter card onto the slide track."""
     dur_arg = ["-t", str(preview)] if preview else []
+    # --at T: a single PNG frame, with the slide passed in as a still image
+    # rather than a rendered track. Cheap enough to try several card sizes.
+    if at is not None:
+        # Pull the frame out first and composite two stills. Feeding a looped
+        # PNG and a seeked video straight into overlay is unreliable: the PNG's
+        # first frame can reach the overlay before the video's does, and the
+        # slide passes through with no card on it.
+        frame = out_path + ".frame.png"
+        subprocess.run([ff, "-y", "-loglevel", "error", "-ss", str(at), "-i", seg,
+                        "-frames:v", "1", "-update", "1", frame], check=True)
+        in0 = ["-i", slide_track]
+        in1 = ["-i", frame]
+        enc = ["-frames:v", "1", "-update", "1"]
+    else:
+        in0 = ["-i", slide_track]; in1 = ["-i", seg]
+        enc = ["-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
+               "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart"]
 
     # Rounded corners via geq on the alpha plane: inside the radius keep the
     # pixel, outside drop it. Cheaper and more portable than an RGBA PNG mask.
@@ -147,14 +184,15 @@ def compose(ff, seg, slide_track, out_path, preview=None):
     )
     subprocess.run(
         [ff, "-y", "-loglevel", "error",
-         "-i", slide_track, "-i", seg, *dur_arg,
+         *in0, *in1, *dur_arg,
          "-filter_complex", filt,
-         "-map", "[v]", "-map", "1:a?",
-         "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-         "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
+         "-map", "[v]", *([] if at is not None else ["-map", "1:a?"]),
+         *enc,
          out_path],
         check=True,
     )
+    if at is not None:
+        os.remove(out_path + ".frame.png")
 
 
 def main():
@@ -164,7 +202,11 @@ def main():
     ap.add_argument("--out", default="build", help="output directory")
     ap.add_argument("--only", help="build just this segment name")
     ap.add_argument("--preview", type=float, help="render only the first N seconds")
+    ap.add_argument("--card", help="card size as WxH (default 600x600)")
+    ap.add_argument("--at", type=float, help="write one PNG still at this second instead of a video")
     args = ap.parse_args()
+    if args.card:
+        set_card(args.card)
 
     ff = ffmpeg_bin()
     man = json.load(open(args.manifest))
@@ -182,6 +224,16 @@ def main():
 
         total = probe_duration(ff, src)
         print(f"{name}: {total:.1f}s, {len(seg['slides'])} slides")
+        if args.at is not None:
+            # the slide showing at that moment: last cue at or before it
+            cue = max((c for c in seg["slides"] if c["at"] * total <= args.at),
+                      key=lambda c: c["at"], default=seg["slides"][0])
+            still = os.path.join(slide_dir, cue["img"])
+            tag = f"-{args.card}" if args.card else ""
+            out_path = os.path.join(args.out, f"{name}{tag}-at{int(args.at)}.png")
+            compose(ff, src, still, out_path, at=args.at)
+            print(f"  -> {out_path}")
+            continue
         with tempfile.TemporaryDirectory() as tmp:
             track = build_slide_track(ff, seg["slides"], total, slide_dir, tmp)
             out_path = os.path.join(args.out, f"{name}.mp4")

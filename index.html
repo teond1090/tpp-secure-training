@@ -39,9 +39,12 @@
      presenter is matted onto solid black, not an alpha channel. Keying the
      black out is not possible because her blazer is black too, so she is
      framed as a deliberate studio card instead. object-fit crops the wide
-     empty margins so she fills the card rather than floating in it. */
-  .player.staged #vid{position:absolute;right:20px;bottom:20px;width:27%;aspect-ratio:3/4;
-    height:auto;z-index:2;object-fit:cover;object-position:center 20%;background:#000;
+     empty margins so she fills the card rather than floating in it.
+     Square, not portrait: the high-energy take opens her arms wide, and a
+     3/4 card cut a hand off in one frame in five. 31.25% of 1920 is the
+     600px card the compositor in tools/ uses, so both match. */
+  .player.staged #vid{position:absolute;right:20px;bottom:20px;width:31.25%;aspect-ratio:1/1;
+    height:auto;z-index:2;object-fit:cover;object-position:center;background:#000;
     border-radius:16px;box-shadow:0 12px 38px rgba(12,18,32,.5);
     border:2px solid rgba(255,255,255,.12)}
   .player.staged.pip #vid{width:26%;right:14px;bottom:14px;border-radius:12px;
