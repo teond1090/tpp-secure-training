@@ -44,6 +44,21 @@
       "title": "Plans & Presenting"
     },
     {
+      "name": "part-2b",
+      "video": "media/part-2b.webm",
+      "title": "The Addendum",
+      "slides": [
+        {
+          "at": 0,
+          "img": "21-addendum.png"
+        },
+        {
+          "at": 0.62,
+          "img": "22-addendum-detail.png"
+        }
+      ]
+    },
+    {
       "name": "part-3",
       "video": "media/part-3.webm",
       "slides": [
