@@ -228,6 +228,31 @@ def make_bumper(ff, png, mp4, kicker, title, navy, accent, hold=BUMPER_HOLD):
     check never lands mid-sentence and the quiz never pops from a cut.
     """
     from PIL import Image, ImageDraw, ImageFont
+
+    def lum(hex_colour):
+        """Relative luminance, WCAG."""
+        c = [int(hex_colour.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+        c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+
+    def readable(fg, bg, target=4.5):
+        """Lighten fg until it reads against bg.
+
+        The Secure accent is red on navy and passes untouched. The RV accent is
+        a dark green on a darker green — invisible — so it is lifted until it
+        carries. Hue is preserved; only the value moves.
+        """
+        r, g, b = (int(fg.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+        lb = lum(bg)
+        for _ in range(40):
+            hi, lo = max(lum(fg), lb) + 0.05, min(lum(fg), lb) + 0.05
+            if hi / lo >= target:
+                return fg
+            r, g, b = (min(255, int(v + (255 - v) * 0.12 + 4)) for v in (r, g, b))
+            fg = f"#{r:02x}{g:02x}{b:02x}"
+        return fg
+
+    kicker_colour = readable(accent, navy)
     img = Image.new("RGB", (W, H), navy)
     d = ImageDraw.Draw(img)
     def font(size, bold=True):
@@ -238,9 +263,9 @@ def make_bumper(ff, png, mp4, kicker, title, navy, accent, hold=BUMPER_HOLD):
             try: return ImageFont.truetype(f, size)
             except OSError: pass
         return ImageFont.load_default()
-    d.rectangle([0, H - 14, W, H], fill=accent)
-    d.rectangle([160, 372, 172, 708], fill=accent)
-    d.text((206, 372), kicker.upper(), font=font(34), fill=accent, spacing=4)
+    d.rectangle([0, H - 14, W, H], fill=kicker_colour)
+    d.rectangle([160, 372, 172, 708], fill=kicker_colour)
+    d.text((206, 372), kicker.upper(), font=font(34), fill=kicker_colour, spacing=4)
     d.text((206, 436), title, font=font(92), fill="white")
     d.text((206, 596), "Answer the questions to continue", font=font(38, bold=False), fill="#cdd6e6")
     img.save(png)
