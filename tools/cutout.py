@@ -21,9 +21,14 @@ SRC_W, SRC_H = 1920, 1080
 OUT_W, OUT_H = 1920, 1080
 SCALE     = 0.76            # her height on the slide: 0.76 * 1080 = 821 px
 CENTER_X  = 1590            # where her body centre stands: in the right column, clear of the slide's photos
-KEY_LUMA  = 8               # above this is her; the backdrop measures exactly 0
-SHRINK    = 6.0             # px to pull the contour in, past the render's dark fringe
+KEY_LUMA  = 4               # above the compression noise in the fringe, below her darkest cloth
+LUMA_BLUR = 1.2             # px; steadies the contour so the sleeve edge stops crawling
+MIN_PIECE = 400             # px; a piece this big is part of her even if it looks detached
+SHRINK    = 5.0             # px to pull the contour in, past the render's dark fringe
 SOFT      = 1.2             # px the alpha ramp takes to cross from 0 to 1
+SHADOW    = 0.14            # how dark her contact shadow sits on the slide, 0 for none
+SHADOW_BLUR = 26            # px of softness on that shadow
+SHADOW_DX, SHADOW_DY = 14, 10   # px the shadow is offset, as if the key light is high and left
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 
 
@@ -54,17 +59,42 @@ def matte(frame):
     Holes are filled before the distance transform so the black inside the
     blazer does not read as background.
     """
-    lum = frame.max(axis=2)
+    lum = frame.max(axis=2).astype(np.float32)
+    if LUMA_BLUR:
+        # The fringe is only a few levels above black, so per-pixel compression
+        # noise moved the contour around from frame to frame and the sleeve
+        # edge crawled. Smoothing the luma first settles it.
+        lum = ndimage.gaussian_filter(lum, LUMA_BLUR)
     fg = lum > KEY_LUMA
-    # only what is connected to the bottom edge is her; stray specks are not
+    # Keep what reaches the bottom edge, and any other piece big enough to be
+    # part of her. Keying higher up pinched a dark sleeve off from the body on
+    # some frames, and a bottom-edge-only rule then threw that piece away for
+    # exactly those frames — an arm blinking in and out. The backdrop is
+    # exactly 0, so nothing above it is background and the test can be this
+    # generous without letting the render's fade-in artefacts through.
     labels, n = ndimage.label(fg)
     if n:
-        keep = np.unique(labels[-1, :]); keep = keep[keep > 0]
-        if len(keep):
-            fg = np.isin(labels, keep)
+        keep = set(np.unique(labels[-1, :])) - {0}
+        sizes = ndimage.sum(fg, labels, range(1, n + 1))
+        keep |= {i + 1 for i, sz in enumerate(sizes) if sz >= MIN_PIECE}
+        if keep:
+            fg = np.isin(labels, list(keep))
     fg = ndimage.binary_fill_holes(fg)
-    d = ndimage.distance_transform_edt(fg) - ndimage.distance_transform_edt(~fg)
-    return np.clip((d - SHRINK) / (2 * SOFT) + 0.5, 0, 1)
+
+    # The distance transform is the expensive step and only matters near her,
+    # so run it on her bounding box with a margin wider than the ramp. Outside
+    # that box the alpha is 0 regardless, so the result is identical.
+    ys, xs = np.nonzero(fg)
+    if len(ys) == 0:
+        return np.zeros(fg.shape, np.float32)
+    pad = int(SHRINK + 4 * SOFT + 2)
+    y0, y1 = max(0, ys.min() - pad), min(fg.shape[0], ys.max() + pad + 1)
+    x0, x1 = max(0, xs.min() - pad), min(fg.shape[1], xs.max() + pad + 1)
+    sub = fg[y0:y1, x0:x1]
+    d = ndimage.distance_transform_edt(sub) - ndimage.distance_transform_edt(~sub)
+    a = np.zeros(fg.shape, np.float32)
+    a[y0:y1, x0:x1] = np.clip((d - SHRINK) / (2 * SOFT) + 0.5, 0, 1)
+    return a
 
 
 def place(frame, alpha, scale, center_x):
@@ -114,7 +144,17 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
             slide = np.frombuffer(sb, np.uint8).reshape(OUT_H, OUT_W, 3).astype(np.float32)
         rgb, al = place(frame, matte(frame), scale, center_x)
         al3 = al[..., None]
-        enc.stdin.write((slide * (1 - al3) + rgb * al3).astype(np.uint8).tobytes()); i += 1
+        base = slide
+        if SHADOW:
+            # A soft shadow cast onto the slide, so she stands on it rather
+            # than floating above it. Offset down and right of her, as if the
+            # key light were high and to the left.
+            # shift, not roll: she reaches the bottom of the frame, and rolling
+            # wrapped that edge around into a grey band across the top
+            sh = ndimage.shift(al, (SHADOW_DY, SHADOW_DX), order=0, mode="constant", cval=0.0)
+            sh = ndimage.gaussian_filter(sh, SHADOW_BLUR) * SHADOW
+            base = slide * (1 - sh[..., None])
+        enc.stdin.write((base * (1 - al3) + rgb * al3).astype(np.uint8).tobytes()); i += 1
     dec.stdout.close(); enc.stdin.close(); dec.wait(); enc.wait()
     if sdec: sdec.stdout.close(); sdec.wait()
     if enc.returncode: sys.exit(f"encode failed for {out}")
