@@ -21,9 +21,9 @@ SRC_W, SRC_H = 1920, 1080
 OUT_W, OUT_H = 1920, 1080
 SCALE     = 0.76            # her height on the slide: 0.76 * 1080 = 821 px
 CENTER_X  = 1590            # where her body centre stands: in the right column, clear of the slide's photos
-KEY_LUMA  = 3               # above this is not backdrop (backdrop measures exactly 0)
-ERODE     = 2               # at half resolution: ~4 source px of dark fringe dropped
-FEATHER   = 0.9             # sigma at half resolution of the edge softening
+KEY_LUMA  = 8               # above this is her; the backdrop measures exactly 0
+SHRINK    = 6.0             # px to pull the contour in, past the render's dark fringe
+SOFT      = 1.2             # px the alpha ramp takes to cross from 0 to 1
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 
 
@@ -34,32 +34,44 @@ def fps_of(src):
 
 
 def matte(frame):
-    """Alpha in 0..1 at half resolution (SRC_H//2 x SRC_W//2).
+    """Alpha in 0..1 at full resolution, anti-aliased.
 
-    Half resolution is plenty: she is scaled down for the slide anyway, and
-    the soft edge hides the difference. It also makes this four times faster.
+    Two things made her look grainy on a white slide.
+
+    The first was the matte's shape. Thresholding to a binary mask and then
+    blurring leaves the blur following whole pixels, so every edge carries a
+    staircase — most visible along her hair. A signed distance transform gives
+    a ramp that crosses 0.5 on the true contour instead, so the edge stays
+    smooth however far the frame is scaled.
+
+    The second was the render's own dark fringe. She is rendered over black,
+    and the outermost five or six pixels of her silhouette are part her and
+    part backdrop: measured across her hair, luma climbs 1, 2, 6, 13, 22, 26
+    before reaching her real brightness. Keeping those pixels puts a grey rim
+    around her on a white slide, and keying cannot tell them from genuinely
+    dark hair. The contour is therefore pulled in past the fringe.
+
+    Holes are filled before the distance transform so the black inside the
+    blazer does not read as background.
     """
-    small = frame[::2, ::2].max(axis=2)
-    fg = small > KEY_LUMA
-    # close first: the blazer's darkest edge pixels fall under the key and
-    # would leave a ragged outline; a 7x7 close (14 source px) smooths it
-    fg = ndimage.binary_closing(fg, structure=np.ones((7, 7)))
+    lum = frame.max(axis=2)
+    fg = lum > KEY_LUMA
     # only what is connected to the bottom edge is her; stray specks are not
     labels, n = ndimage.label(fg)
     if n:
         keep = np.unique(labels[-1, :]); keep = keep[keep > 0]
         if len(keep):
             fg = np.isin(labels, keep)
-    if ERODE:
-        fg = ndimage.binary_erosion(fg, iterations=ERODE)          # the black edge blend
-    return np.clip(ndimage.gaussian_filter(fg.astype(np.float32), FEATHER), 0, 1)
+    fg = ndimage.binary_fill_holes(fg)
+    d = ndimage.distance_transform_edt(fg) - ndimage.distance_transform_edt(~fg)
+    return np.clip((d - SHRINK) / (2 * SOFT) + 0.5, 0, 1)
 
 
 def place(frame, alpha, scale, center_x):
     """Scale her and return (rgb, alpha) canvases the size of the output."""
     w, h = int(round(SRC_W * scale)), int(round(SRC_H * scale))
     rgb = np.asarray(Image.fromarray(frame).resize((w, h), Image.Resampling.HAMMING), np.float32)
-    al  = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).resize((w, h), Image.Resampling.BILINEAR), np.float32) / 255
+    al  = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).resize((w, h), Image.Resampling.LANCZOS), np.float32) / 255
     ox, oy = int(round(center_x - w / 2)), OUT_H - h
     crgb = np.zeros((OUT_H, OUT_W, 3), np.float32); cal = np.zeros((OUT_H, OUT_W), np.float32)
     x0, x1 = max(ox, 0), min(ox + w, OUT_W)

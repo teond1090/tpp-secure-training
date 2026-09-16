@@ -198,6 +198,7 @@ def compose(ff, seg, slide_track, out_path, preview=None, at=None, card_ready=Fa
 
 
 JOIN_FADE = 0.5           # seconds of cross-fade where one section becomes the next
+SECTION_TAIL = 1.3        # seconds of held frame and silence after a section's last word
 SIZE_CAP  = 95_000_000    # GitHub refuses files over 100 MB; leave headroom
 
 # A light "recorded in a room" polish for the narration: rumble rolled off,
@@ -274,6 +275,24 @@ def make_bumper(ff, png, mp4, kicker, title, navy, accent, hold=BUMPER_HOLD):
                     "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
                     "-c:a", "aac", "-b:a", "96k", mp4], check=True)
     return mp4
+
+
+def pad_tail(ff, src, out, seconds=SECTION_TAIL):
+    """Hold a section's last frame, in silence, for a moment after it ends.
+
+    The cross-fade into the knowledge-check card used to eat the last half
+    second of speech, so the card — and the question with it — arrived while
+    she was still finishing her sentence. Padding first means the fade has
+    silence to work with and she is always heard out.
+    """
+    subprocess.run(
+        [ff, "-y", "-loglevel", "error", "-i", src,
+         "-vf", f"tpad=stop_mode=clone:stop_duration={seconds}",
+         "-af", f"apad=pad_dur={seconds}",
+         "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
+         "-c:a", "aac", "-b:a", "128k", out],
+        check=True)
+    return out
 
 
 def join(ff, parts, out_path, crf=23, voice_polish=False, kinds=None):
@@ -403,7 +422,8 @@ def main():
         # a "Knowledge Check" card after every section, including the last
         pieces, kinds = [], []
         for k, (seg, part) in enumerate(zip(segs, parts), start=1):
-            pieces.append(part); kinds.append("section")
+            padded = os.path.join(args.out, f"{seg['name']}-tail.mp4")
+            pieces.append(pad_tail(ff, part, padded)); kinds.append("section")
             card = make_bumper(ff, os.path.join(args.out, f"check-{k}.png"), os.path.join(args.out, f"check-{k}.mp4"),
                                f"Knowledge check {k} of {len(segs)}", seg.get("title", f"Section {k}"),
                                man.get("navy", "#16233F"), man.get("accent", "#B01824"))

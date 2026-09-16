@@ -433,11 +433,16 @@ const OPTOUT_CLIENTS = {
   tpp: { name:'TPP Training Videos', site:'myownpolicy.com', email:'support@myownpolicy.com',
          days:10, csm:'Teon Delacruz', csmEmail:'tdelacruz@tenantpropertyprotection.com' }
 };
+/* The course is sent straight to the people being trained, so the plain
+   address has to be the whole course — no query string to remember and
+   none to lose when the link is forwarded. ?client= still selects a
+   different entry above if there is ever more than one. */
 const OO = (function(){
   try {
     const id = new URLSearchParams(location.search).get('client');
-    return (id && Object.prototype.hasOwnProperty.call(OPTOUT_CLIENTS, id)) ? OPTOUT_CLIENTS[id] : null;
-  } catch(e){ return null; }
+    if (id && Object.prototype.hasOwnProperty.call(OPTOUT_CLIENTS, id)) return OPTOUT_CLIENTS[id];
+  } catch(e){}
+  return OPTOUT_CLIENTS.tpp;
 })();
 
 let firstTryCorrect = 0, activeQuiz = -1;
