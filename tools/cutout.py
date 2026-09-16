@@ -123,6 +123,7 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
         sdec = subprocess.Popen([FF, "-v", "error", "-i", slide_src, "-f", "rawvideo", "-pix_fmt", "rgb24",
                                  "-s", f"{OUT_W}x{OUT_H}", "-r", str(fps), "pipe:1"],
                                 stdout=subprocess.PIPE, bufsize=OUT_W * OUT_H * 3 * 4)
+        slide = np.zeros((OUT_H, OUT_W, 3), np.float32)
     enc = subprocess.Popen([FF, "-y", "-v", "error",
                             "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{OUT_W}x{OUT_H}", "-r", str(fps), "-i", "pipe:0",
                             *cut, "-i", avatar, "-map", "0:v", "-map", "1:a?", "-shortest",
@@ -132,16 +133,22 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         from track_presenter import clean_opening
     nbytes, sbytes, i = SRC_W * SRC_H * 3, OUT_W * OUT_H * 3, 0
+    slide_done = False
     while True:
         buf = dec.stdout.read(nbytes)
         if len(buf) < nbytes: break
         frame = np.frombuffer(buf, np.uint8).reshape(SRC_H, SRC_W, 3)
         if clean and (i / fps) < clean["until"]:
             frame = frame.copy(); clean_opening(frame, clean["x"])
-        if sdec:
+        if sdec and not slide_done:
             sb = sdec.stdout.read(sbytes)
-            if len(sb) < sbytes: break
-            slide = np.frombuffer(sb, np.uint8).reshape(OUT_H, OUT_W, 3).astype(np.float32)
+            if len(sb) < sbytes:
+                # The slides ran out before she stopped talking. Hold the last
+                # one rather than stopping: ending here truncates the narration
+                # mid-sentence, which is exactly the fault this guards against.
+                slide_done = True
+            else:
+                slide = np.frombuffer(sb, np.uint8).reshape(OUT_H, OUT_W, 3).astype(np.float32)
         rgb, al = place(frame, matte(frame), scale, center_x)
         al3 = al[..., None]
         base = slide

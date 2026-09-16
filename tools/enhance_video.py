@@ -112,6 +112,15 @@ def build_slide_track(ff, slides, total, slide_dir, tmp):
         if not os.path.exists(src):
             sys.exit(f"missing slide: {src}")
         out = os.path.join(tmp, f"slide_{idx:03d}.mp4")
+        # Every cross-fade swallows XFADE seconds of the chain, so a clip that
+        # is exactly as long as its span leaves the finished track short by
+        # XFADE for each transition before it. That shortfall used to cut the
+        # end off the narration — compositing stops when the slides run out,
+        # and she was losing up to three seconds, mid-sentence. Rendering each
+        # clip after the first XFADE longer pays the fade back, so the track
+        # comes out exactly `total` and every cue still lands on its word.
+        if idx:
+            dur += XFADE
         frames = max(int(dur * 30), 2)
         # zoompan needs an oversized input or the push shows edge artefacts.
         vf = (
@@ -129,7 +138,7 @@ def build_slide_track(ff, slides, total, slide_dir, tmp):
         parts.append((out, dur))
 
     if len(parts) == 1:
-        return parts[0][0]
+        return fit_track(ff, parts[0][0], total, tmp)
 
     # Cross-fade the clips together, one pair at a time.
     cur, cur_dur = parts[0]
@@ -144,7 +153,29 @@ def build_slide_track(ff, slides, total, slide_dir, tmp):
             check=True,
         )
         cur, cur_dur = out, offset + nxt_dur
-    return cur
+    return fit_track(ff, cur, total, tmp)
+
+
+def fit_track(ff, track, total, tmp):
+    """Make sure the slide track is never shorter than the narration.
+
+    Belt and braces behind the XFADE accounting above: rounding in zoompan's
+    frame counts can still leave the track a few frames short, and a slide
+    track that runs out takes the end of her sentence with it. Holding the
+    last slide costs nothing and makes that whole class of bug impossible.
+    """
+    have = probe_duration(ff, track)
+    if have >= total - 0.04:
+        return track
+    out = os.path.join(tmp, "slides_fitted.mp4")
+    subprocess.run(
+        [ff, "-y", "-loglevel", "error", "-i", track,
+         "-vf", f"tpad=stop_mode=clone:stop_duration={total - have + 0.1:.3f}",
+         "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", out],
+        check=True,
+    )
+    print(f"  slide track was {total - have:.2f}s short — held the last slide")
+    return out
 
 
 def compose(ff, seg, slide_track, out_path, preview=None, at=None, card_ready=False):
@@ -198,7 +229,7 @@ def compose(ff, seg, slide_track, out_path, preview=None, at=None, card_ready=Fa
 
 
 JOIN_FADE = 0.5           # seconds of cross-fade where one section becomes the next
-SECTION_TAIL = 1.3        # seconds of held frame and silence after a section's last word
+SECTION_TAIL = 1.8        # seconds of held frame and silence after a section's last word
 SIZE_CAP  = 95_000_000    # GitHub refuses files over 100 MB; leave headroom
 
 # A light "recorded in a room" polish for the narration: rumble rolled off,
@@ -410,6 +441,15 @@ def main():
                 compose(ff, presenter, track, out_path, args.preview, card_ready=True)
             else:
                 compose(ff, src, track, out_path, args.preview)
+        # Compositing must never shorten the narration. It once did — the
+        # slide track came up short and the encode simply stopped there,
+        # taking the end of her sentence with it — so this is checked rather
+        # than assumed. A preview is deliberately short, so it is exempt.
+        if args.preview is None:
+            got = probe_duration(ff, out_path)
+            if got < total - 0.1:
+                sys.exit(f"{name}: composited to {got:.2f}s from a {total:.2f}s render — "
+                         f"{total - got:.2f}s of narration lost")
         size = os.path.getsize(out_path) / 1e6
         print(f"  -> {out_path}  ({size:.1f} MB)")
 
