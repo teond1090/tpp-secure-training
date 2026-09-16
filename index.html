@@ -419,9 +419,6 @@ const OPTOUT_CLIENTS = {
   tpp: { name:'TPP Training Videos', site:'myownpolicy.com', email:'support@myownpolicy.com',
          days:10, csm:'Teon Delacruz', csmEmail:'tdelacruz@tenantpropertyprotection.com' }
 };
-/* Links shared before the rebrand carry ?client=protego. Alias it rather
-   than break them — same configuration, TPP branding throughout. */
-OPTOUT_CLIENTS.protego = OPTOUT_CLIENTS.tpp;
 const OO = (function(){
   try {
     const id = new URLSearchParams(location.search).get('client');
