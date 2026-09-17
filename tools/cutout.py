@@ -116,11 +116,38 @@ def matte(frame):
     return a
 
 
+def harden(rgb, a):
+    """Force her interior to full opacity, keeping the contour anti-aliased.
+
+    HeyGen's matte is less certain on near-black cloth: measured over her lower
+    body, 1242 pixels a frame sit between 0.93 and 0.99 alpha well inside her
+    blazer. Each one lets a little of the white slide through, and because the
+    values wobble frame to frame it reads as white pixels crawling in the hem.
+
+    A pixel whose whole 3x3 neighbourhood is solid cannot be on the contour, so
+    it is pushed to 1. The colour is scaled by the same factor, because the
+    render is premultiplied and the two have to stay in step.
+    """
+    core = ndimage.grey_erosion(a, size=3) > 0.6
+    if not core.any():
+        return rgb, a
+    gain = np.where(core, 1.0 / np.maximum(a, 1e-3), 1.0)
+    np.minimum(gain, 1.5, out=gain)             # never invent more than a nudge
+    rgb = np.clip(rgb.astype(np.float32) * gain[..., None], 0, 255)
+    return rgb, np.where(core, 1.0, a)
+
+
 def place(frame, alpha, scale, center_x):
     """Scale her and return (rgb, alpha) canvases the size of the output."""
     w, h = int(round(SRC_W * scale)), int(round(SRC_H * scale))
-    rgb = np.asarray(Image.fromarray(frame).resize((w, h), Image.Resampling.HAMMING), np.float32)
-    al  = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).resize((w, h), Image.Resampling.LANCZOS), np.float32) / 255
+    # One kernel for both: premultiplied colour and its alpha have to be scaled
+    # together or the relationship between them breaks at every edge. Hamming
+    # also does not overshoot, which Lanczos does — an overshoot on a matte
+    # shows up as a bright halo.
+    rgb = np.asarray(Image.fromarray(np.clip(frame, 0, 255).astype(np.uint8))
+                     .resize((w, h), Image.Resampling.HAMMING), np.float32)
+    al  = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8))
+                     .resize((w, h), Image.Resampling.HAMMING), np.float32) / 255
     ox, oy = int(round(center_x - w / 2)), OUT_H - h
     crgb = np.zeros((OUT_H, OUT_W, 3), np.float32); cal = np.zeros((OUT_H, OUT_W), np.float32)
     x0, x1 = max(ox, 0), min(ox + w, OUT_W)
@@ -165,6 +192,7 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
         arr = np.frombuffer(buf, np.uint8).reshape(SRC_H, SRC_W, chans)
         if alpha:
             frame, a = np.ascontiguousarray(arr[..., :3]), arr[..., 3].astype(np.float32) / 255
+            frame, a = harden(frame, a)
         else:
             frame, a = arr, matte(arr)
         if clean and (i / fps) < clean["until"]:
@@ -190,7 +218,12 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
             sh = ndimage.shift(al, (SHADOW_DY, SHADOW_DX), order=0, mode="constant", cval=0.0)
             sh = ndimage.gaussian_filter(sh, SHADOW_BLUR) * SHADOW
             base = slide * (1 - sh[..., None])
-        enc.stdin.write((base * (1 - al3) + rgb * al3).astype(np.uint8).tobytes()); i += 1
+        # The render's alpha is premultiplied — the stored colour is already
+        # scaled by it (fitted over her hair, rgb = 48.2 * alpha, against a flat
+        # fit 33x worse). Multiplying by alpha again darkened every soft pixel,
+        # which is the black line that was tracing her hair.
+        px = base * (1 - al3) + (rgb if alpha else rgb * al3)
+        enc.stdin.write(np.clip(px, 0, 255).astype(np.uint8).tobytes()); i += 1
     dec.stdout.close(); enc.stdin.close(); dec.wait(); enc.wait()
     if sdec: sdec.stdout.close(); sdec.wait()
     if enc.returncode: sys.exit(f"encode failed for {out}")
