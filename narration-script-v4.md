@@ -66,14 +66,14 @@ the next three years. Just a plan that does what it says.
 Let's talk plans — and more importantly, how to offer them.
 
 The example levels are two thousand, three thousand, and five thousand
-dollars of coverage. But listen — those are examples, not a fixed rate
-card. Our coverage levels and pricing are flexible, and we can accommodate
-most customer needs and requests. If a tenant needs something different?
-Just ask. That's a normal conversation, not an exception.
+dollars of coverage. Your rates are set for your facility — they are not
+something you negotiate at the counter. But higher limits are available on
+request, so if a tenant needs more than what is on your rate card? Just
+ask. That's a normal conversation, not an exception.
 
-One rule to remember: plans of five thousand dollars and above need a short
+One rule to remember: plans over five thousand dollars need a short
 application with an inventory list and photos, done through the BirdsEye
-tool. It takes minutes, and it means underwriters have a baseline before
+tool. The five thousand dollar plan itself does not need one. It takes minutes, and it means underwriters have a baseline before
 anything ever happens.
 
 Now — the fun part. How do you offer this without sounding like a
