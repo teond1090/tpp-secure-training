@@ -1,12 +1,12 @@
 {
-  "note": "Source renders for this course \u2014 presenter-style delivery: deliberate gestures toward the slide, hands settling between points. fetch-videos.yml pulls these into media/ on demand.",
+  "note": "Source renders for this course — presenter-style delivery: deliberate gestures toward the slide, hands settling between points. fetch-videos.yml pulls these into media/ on demand.",
   "files": [
     {
       "name": "part-1.webm",
       "section": "Welcome + Why TPP Secure Exists",
-      "video_id": "c6ca37c624f9ebd14b15f5e59cc05872",
-      "seconds": 118.727,
-      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/c6ca37c624f9ebd14b15f5e59cc05872.webm"
+      "video_id": "f3cf3b4169ae42b554f7701c779b02b4",
+      "seconds": 120.137,
+      "url": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/0fc786e7689248149b7af249dff7f69a/f3cf3b4169ae42b554f7701c779b02b4.webm"
     },
     {
       "name": "part-2.webm",
