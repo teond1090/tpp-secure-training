@@ -331,19 +331,19 @@ const QUIZZES = [
      a:["About two-thirds — roughly 67%","About 10%","Almost none — nearly everyone is covered"], c:0,
      e:"Roughly 67% of self-storage tenants have no homeowners policy. And of those who do, many have off-premises limits or exclusions they don't know about."},
     {q:"How is a covered loss valued under the protection plan?",
-     a:["At fair market value","At full replacement cost — brand-new items regardless of age","At a flat percentage of the plan limit"], c:0,
-     e:"Claims are processed based on fair market value. That is different from full replacement cost — which would mean replacing items with new items of similar quality — and the plan does not settle claims that way."}
+     a:["At actual cash value — what the item is worth today, after depreciation","At full replacement cost — brand-new items regardless of age","At a flat percentage of the plan limit"], c:0,
+     e:"Claims are settled at actual cash value: what the item is worth today, with depreciation taken off for age and wear. That is different from full replacement cost, which would mean replacing an item with a new one of similar quality, and the plan does not settle claims that way."}
   ]},
   { at:0.27316, title:"Plans & Presenting", q:[
     {q:"A customer wants coverage that doesn't match the plans shown in this training. What's true?",
-     a:["Coverage levels and pricing are flexible — we can accommodate most needs and requests","The three plan limits are fixed and cannot be changed","They would have to find a different provider"], c:0,
-     e:"The plans shown here are examples, not a fixed rate card. Our coverage levels and pricing are flexible and we can accommodate most customer needs and requests — so if what they need isn't on the list, just ask."},
+     a:["Rates are set for your facility, but higher limits are available on request","Any rate can be negotiated at the counter","They would have to find a different provider"], c:0,
+     e:"Coverage rates are fixed for your facility — they are not negotiated at the counter. Higher limits are available on request, so if a tenant needs more than the plans on your rate card, ask and we will look at it."},
     {q:"What's the best way to offer the plan to a new tenant?",
-     a:["Ask which level of protection they'd like — not whether they want one","Ask if they'd like to add a protection plan","Wait for them to bring it up"], c:0,
-     e:"\"Would you like a protection plan?\" invites a no. Asking which plan moves the conversation from whether to which — and naming the middle plan first leaves you room to move either direction."},
+     a:["Ask what level of coverage their contents need","Ask if they'd like to add a protection plan","Wait for them to bring it up"], c:0,
+     e:"\"Would you like a protection plan?\" invites a no. Asking what level of coverage their contents need moves the conversation from whether to how much — and naming the middle plan first leaves you room to move either direction."},
     {q:"Which plan limits require an inventory through the BirdsEye tool?",
-     a:["$5,000 and above","Every plan, no exceptions","Only plans over $10,000"], c:0,
-     e:"Plans of $5,000 and above require a short application with an inventory list and photos, so underwriters can establish a baseline before anything happens."}
+     a:["Above $5,000","Every plan, no exceptions","Only plans over $10,000"], c:0,
+     e:"Plans above $5,000 require a short application with an inventory list and photos, so underwriters can establish a baseline before anything happens."}
   ]},
   { at:0.40573, title:"The Addendum", q:[
     {q:"What does the tenant\u2019s signature on the addendum actually prove?",
@@ -356,7 +356,7 @@ const QUIZZES = [
      a:["No \u2014 flood and surface water are excluded; that is the National Flood Program","Yes, all water damage is covered","Only if the tenant reports it within 30 days"], c:0,
      e:"Roof leak and water damage are covered, but flood, surface water, underground water and sewer or drain backup are not. Flood insurance comes from the National Flood Program."},
     {q:"Whose responsibility is the inventory list and documentation?",
-     a:["The tenant\u2019s \u2014 they keep the list, photos and receipts","The manager\u2019s","The adjuster\u2019s, after a claim is filed"], c:0,
+     a:["The tenant\u2019s \u2014 they provide the list, photos and receipts","The manager\u2019s","The adjuster\u2019s, after a claim is filed"], c:0,
      e:"The addendum makes the inventory the tenant\u2019s responsibility. It establishes a baseline if they ever claim, which is why BirdsEye is worth showing them at the counter."}
   ]},
   { at:0.54241, title:"Coverage & Exclusions", q:[
@@ -392,25 +392,25 @@ const QUIZZES = [
   ]},
   { at:0.99879, title:"The Tenant Opt-Out Process", q:[
     {q:"A tenant sends a photo of their policy to opt out. What must it show?",
-     a:["The insurance company, the policy number, and the expiration date",
+     a:["The insurance company, the policy number, the expiration date, and the tenant named on the lease",
         "The tenant\u2019s name and unit number only",
         "Just the name of the insurance company"], c:0,
-     e:"All three, readable, in one image. If any one is missing the policy cannot be added and the opt-out does not go through \u2014 which is why the declaration page is the thing to ask for."},
+     e:"All four, readable, in one image \u2014 and the tenant on the policy has to be the tenant on the lease. If any one is missing the policy cannot be added and the opt-out does not go through \u2014 which is why the declaration page is the thing to ask for."},
     {q:"How long does a tenant have to get their policy to us?",
-     a:["10 days from the day they move in and sign the lease",
+     a:["10 business days from the day they move in and sign the lease",
         "30 days from move-in",
         "Until the end of their first month"], c:0,
-     e:"Ten days from move-in and lease signing. If that passes without a policy we can verify, the tenant is automatically enrolled in the protection plan."},
+     e:"Ten business days from move-in and lease signing. If that passes without a policy we can verify, the tenant is automatically enrolled in the protection plan."},
     {q:"When does a tenant receive the policy expiration notice?",
      a:["10 days before their own policy expires, sent from myownpolicy.com",
         "On the day the policy expires",
         "Only if the manager requests it"], c:0,
      e:"We email the tenant an expiration notice from myownpolicy.com 10 days before their policy expires, so they can send a renewed declaration page before the old one lapses."},
-    {q:"A tenant opts out on the 20th and asks for that month back. What do you tell them?",
-     a:["The plan is not pro-rated \u2014 the full month is charged, with no partial refund",
+    {q:"A tenant moves out on the 20th of the month and asks for the rest of the month back. What do you tell them?",
+     a:["We do not pro-rate \u2014 the coverage amount is charged whether they stay one day or the whole month",
         "They get a refund for the unused days",
         "The charge is reversed automatically"], c:0,
-     e:"A full month is charged whether the tenant is on the plan for one day or the whole month. Saying so at the counter is much easier than explaining it afterwards."},
+     e:"There is no pro-rating on move-out. The coverage amount is charged whether the tenant is on the plan for one day or all month. Saying so at the counter is much easier than explaining it afterwards."},
     {q:"A tenant cannot get the upload on the site to work. What do you tell them?",
      a:["Email it to support@myownpolicy.com with a photo of their declaration page",
         "Tell them to try again next month",
@@ -418,6 +418,28 @@ const QUIZZES = [
      e:"The email route works exactly the same way and is reviewed Monday to Friday. That same address also lets you confirm which tenants have sent theirs in."}
   ]}
 ];
+
+/* Spread the correct answers around the options.
+   Every question here was authored with its correct answer written first,
+   which meant a learner could pass every knowledge check by always clicking
+   the top choice without reading a word. Within a section the answers now
+   walk through the positions in turn, starting from an offset derived from
+   the section's own title — so each section uses all three positions about
+   equally, the order is stable for a given question (somebody retaking a
+   check sees what they saw before, and the explanations still match), and
+   there is no position worth guessing. */
+function spreadAnswers(list, seed){
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  list.forEach((item, qi) => {
+    const n = item.a.length, k = (h + qi) % n;
+    if (!k) return;
+    item.a = item.a.slice(n - k).concat(item.a.slice(0, n - k));
+    item.c = (item.c + k) % n;
+  });
+}
+QUIZZES.forEach(z => spreadAnswers(z.q, z.title));
+
 let TOTAL_Q = QUIZZES.reduce((n,z)=>n+z.q.length,0);
 
 /* =====================================================================
@@ -706,16 +728,16 @@ if (false) {
       <h3>How a tenant opts out</h3>
       <p>A tenant who already carries their own insurance can <b>opt out</b> by sending us their
          policy — online at <b><a href="https://${S}" target="_blank" rel="noopener">${S}</a></b> or
-         by email. They have <b>${D} days from move-in</b> to do it. Either route ends the same way:
+         by email. They have <b>${D} business days from move-in</b> to do it. Either route ends the same way:
          <b>we have to be able to verify the policy from the photo they send.</b>
          That single point is what most failed opt-outs come down to.</p>
     </div>
     <div class="oo-step">
       <div class="oo-kick">The deadline</div>
-      <h3>The ${D}-day window</h3>
+      <h3>The ${D}-business-day window</h3>
       <p>The clock starts <b>the day they move in and sign the lease</b>. From that day the tenant has
-         <b>${D} days</b> to get a policy to us that we can verify.</p>
-      <p>If the ${D} days pass without one, <b>they are automatically enrolled in the protection
+         <b>${D} business days</b> to get a policy to us that we can verify.</p>
+      <p>If the ${D} business days pass without one, <b>they are automatically enrolled in the protection
          plan</b>. They can still opt out later — see below — but the month they are on the plan is
          charged in full. That is why this is worth saying out loud at the counter rather than leaving
          it to the paperwork — it is a short window, and a tenant who means to do it later often
@@ -740,7 +762,7 @@ if (false) {
       <h3>How a submission runs</h3>
       <div class="oo-s"><div class="oo-n">1</div><div><b>The tenant enters their information.</b>
         Send them to <a href="https://${S}" target="_blank" rel="noopener">${S}</a>, where they fill
-        in their details — within <b>${D} days</b> of moving in and signing the lease.</div></div>
+        in their details — within <b>${D} business days</b> of moving in and signing the lease.</div></div>
       <div class="oo-s"><div class="oo-n">2</div><div><b>They attach a photo of their policy.</b>
         This is the step that matters. The photo must clearly show the insurance company, the policy
         number and the expiration date — all three, in one readable image.</div></div>
@@ -766,7 +788,7 @@ if (false) {
     <div class="oo-step">
       <div class="oo-kick">Opting out later</div>
       <h3>Any time — and how the month is billed</h3>
-      <p><b>A tenant can opt out at any time.</b> The ${D} days is the window for avoiding enrollment
+      <p><b>A tenant can opt out at any time.</b> The ${D} business days are the window for avoiding enrollment
          in the first place — it is not a cut-off after which they are stuck on the plan. The process
          is exactly the same: send us the policy, showing the same three details.</p>
       <p>Be straight about the billing, because it is the next question every time: <b>the plan is
@@ -785,7 +807,7 @@ if (false) {
         <li><b>Charity units</b></li>
       </ul>
       <p style="margin-top:10px">These can be added to an <b>exclusion list</b>. Once a tenant is on
-         it they are <b>never sent an opt-out notification at all</b> — no notice, no ${D}-day clock,
+         it they are <b>never sent an opt-out notification at all</b> — no notice, no ${D}-business-day clock,
          no automatic enrollment.</p>
       <p>Setting it up is one email. Send <b>${OO.csm}</b> the list of tenants you want excluded and
          we will add them. Worth doing <b>before launch</b>, so nobody who shouldn&rsquo;t hear from
@@ -796,23 +818,24 @@ if (false) {
 
   const OO_Q = [
     { q:'A tenant sends a photo of their policy to opt out. What must it show?',
-      a:['The insurance company, the policy number, and the expiration date',
+      a:['The insurance company, the policy number, the expiration date, and the tenant named on the lease',
          'The tenant\u2019s name and unit number only',
          'Just the name of the insurance company'], c:0,
-      e:'All three, readable, in one image. If any one is missing the policy cannot be added and the '
+      e:'All four, readable, in one image — and the tenant on the policy has to be the tenant on the lease. If any one is missing the policy cannot be added and the '
        + 'opt-out does not go through — which is why the declaration page is the thing to ask for.' },
     { q:'How long does a tenant have to get their policy to us?',
-      a:['10 days from the day they move in and sign the lease',
+      a:['10 business days from the day they move in and sign the lease',
          '30 days from move-in',
          'Until the end of their first month'], c:0,
-      e:'Ten days from move-in and lease signing. If that passes without a policy we can verify, the '
+      e:'Ten business days from move-in and lease signing. If that passes without a policy we can verify, the '
        + 'tenant is automatically enrolled in the protection plan.' },
-    { q:'A tenant opts out on the 20th and asks for that month back. What do you tell them?',
-      a:['The plan is not pro-rated — the full month is charged, with no partial refund',
+    { q:'A tenant moves out on the 20th of the month and asks for the rest of the month back. What do you tell them?',
+      a:['We do not pro-rate — the coverage amount is charged whether they stay one day or the whole month',
          'They get a refund for the unused days',
          'The charge is reversed automatically'], c:0,
-      e:'A full month is charged whether the tenant is on the plan for one day or the whole month. '
-       + 'Saying so at the counter is much easier than explaining it afterwards.' },
+      e:'There is no pro-rating on move-out. The coverage amount is charged whether the tenant is on '
+       + 'the plan for one day or all month. Saying so at the counter is much easier than explaining '
+       + 'it afterwards.' },
     { q:'A tenant cannot get the upload on the site to work. What do you tell them?',
       a:['Email it to ' + E + ' with a photo of their declaration page',
          'Tell them to try again next month',
@@ -820,6 +843,8 @@ if (false) {
       e:'The email route works exactly the same way and is reviewed Monday to Friday. That same '
        + 'address also lets you confirm which tenants have sent theirs in.' }
   ];
+  spreadAnswers(OO_Q, 'opt-out');
+
 
   const ooQuiz = document.getElementById('ooQuiz');
   OO_Q.forEach((item,qi)=>{
