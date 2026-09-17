@@ -77,10 +77,10 @@ tool. The five thousand dollar plan itself does not need one. It takes minutes, 
 anything ever happens.
 
 Now — the fun part. How do you offer this without sounding like a
-salesperson? Simple. Ask *which*, not *whether*.
+salesperson? Simple. Ask *what they need*, not *whether they want it*.
 
-"Would you like a protection plan?" — that invites a no. But "Which level
-of protection would you like?" — now the conversation is moving! Name the
+"Would you like a protection plan?" — that invites a no. But "What level of
+coverage do your contents need?" — now the conversation is moving! Name the
 middle plan first, and you've got room to go up or down. And frame it
 daily: nobody argues about fifty cents a day, but they'll argue about
 fifteen dollars a month. Same number. Completely different conversation.
@@ -189,30 +189,32 @@ They do it online at myownpolicy.com, or by email. And either route ends
 the same way: we have to be able to *verify* the policy from the photo they
 send. That single point is what almost every failed opt-out comes down to.
 
-Let's talk about the clock. The tenant has **ten days** from the day they
-move in and sign the lease to get us a policy we can verify. If those ten
-days pass without one, they're automatically enrolled in the protection
-plan. So say it out loud at the counter — don't leave it to the paperwork.
+Let's talk about the clock. The tenant has **ten business days** from the
+day they move in and sign the lease to get us a policy we can verify. If
+those ten business days pass without one, they're automatically enrolled in
+the protection plan. So say it out loud at the counter — don't leave it to the paperwork.
 It's a short window, and a tenant who means to do it later often doesn't.
 If they've got their declaration page on their phone, the fastest thing in
 the world is to have them send it right there while they're standing in
 front of you.
 
 Now — the photo. This is the part to get right. It has to clearly show
-three things, all readable, in one image: the **insurance company**, the
-**policy number**, and the **expiration date**. All three. If any one of
-them is missing, cut off, or blurry, the policy cannot be added to the
-tenant's account and the opt-out does not go through. The declaration page
-normally shows all three in a single shot — so that's the one to ask for.
+four things, all readable, in one image: the **insurance company**, the
+**policy number**, the **expiration date**, and the **tenant named on the
+lease**. All four. If any one of them is missing, cut off, or blurry, the
+policy cannot be added to the tenant's account and the opt-out does not go
+through. And the name on the policy has to be the name on the lease — that
+one catches people out. The declaration page normally shows all of it in a
+single shot, so that's the one to ask for.
 
 The steps are simple. One: the tenant goes to myownpolicy.com and enters
 their information. Two: they attach that photo. Three: our internal team
 reviews opt-out submissions and the support inbox Monday through Friday,
-and once the three details are verified, the policy is added to their
+and once those four details are verified, the policy is added to their
 account.
 
 If a tenant can't get the upload to work, they email it instead — same
-process, same three details, and it's reviewed the same way. And that email
+process, same four details, and it's reviewed the same way. And that email
 address works for *you*, too: you can use it any time to confirm which of
 your tenants have actually sent their policies in.
 
@@ -223,18 +225,19 @@ tenant's cue to send us their renewed declaration page before the old one
 lapses. It's why you're not sitting there reviewing insurance records by
 hand anymore. The system watches the dates for you.
 
-Two more things. First, a tenant can opt out at *any* time — the ten days
-is the window for avoiding enrollment in the first place, not a door that
-locks behind them. Same process, same three details. But be straight about
-the money, because it's the very next question every single time: the plan
-is not pro-rated. A full month is charged whether the tenant is on it for
-one day or the whole month, and there's no partial refund. Saying that
-plainly at the counter is so much easier than explaining it afterwards.
+Two more things. First, a tenant can opt out at *any* time — the ten
+business days is the window for avoiding enrollment in the first place, not
+a door that locks behind them. Same process, same details. But be straight about
+the money, because it's the very next question every single time: we do not
+pro-rate. If a tenant moves out on the twentieth of the month, the coverage
+amount is still charged — whether they stay one day or all month, and
+there's no partial refund. Saying that plainly at the counter is so much
+easier than explaining it afterwards.
 
 Second — the exclusion list. Some units should never get an opt-out notice
 at all: tenants who've been grandfathered in, company units, and charity
 units. Those go on an exclusion list, and once a tenant is on it they're
-never sent an opt-out notification — no notice, no ten-day clock, no
+never sent an opt-out notification — no notice, no ten-business-day clock, no
 automatic enrollment. Setting it up is one email to Teon Delacruz with the
 list of tenants to exclude. Do it before launch, so nobody hears from us
 who shouldn't.
@@ -249,5 +252,5 @@ knowledge check, print your certificate, and hit "Report my completion" so
 it lands on your training record automatically.
 
 Questions? Teon Delacruz is your Client Success Manager, and there's no
-charge for training support — ever. Now get out there and ask *which*, not
-*whether*. You've got this!
+charge for training support — ever. Now get out there and ask what their
+contents need, not whether they want a plan. You've got this!
