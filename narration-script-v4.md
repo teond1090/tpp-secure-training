@@ -5,7 +5,7 @@
 Written for spoken delivery: contractions, short sentences, direct address.
 
 Incorporates the Claims team / Shelly revision list:
-fair market value (not full replacement cost), no 72-hour payment promise
+actual cash value (not full replacement cost), no 72-hour payment promise
 (up to 30 days), only the filing email is automated, claims portal preferred
 over email, adjuster hours 7:00 AM - 5:00 PM Arizona, portal access is
 structured per portfolio (not one login per location),  marketing materials language covers both delivery models,
@@ -47,12 +47,13 @@ completely. Most tenants have never read that page. They genuinely believe
 they're covered. They're usually wrong.
 
 That's the gap TPP Secure fills. When a covered loss happens, the claim is
-processed based on fair market value — what the item is actually worth. And
-here's a vocabulary moment, because these two get mixed up all the time:
-"full replacement cost" would mean replacing the item with a brand-new one
-of similar quality. That is *not* the same thing, and it's not how these
-claims work. Fair market value — that's the phrase, and now you know the
-difference, which puts you ahead of most people in this industry!
+processed at actual cash value — what the item is worth today, after
+depreciation for age and wear. And here's a vocabulary moment, because
+these two get mixed up all the time: "full replacement cost" would mean
+replacing the item with a brand-new one of similar quality. That is *not*
+the same thing, and it's not how these claims work. Actual cash value —
+that's the phrase, and now you know the difference, which puts you ahead of
+most people in this industry!
 
 And unlike a homeowners claim, filing here never touches an insurance
 premium. No deductible surprise on a homeowners policy, no rate creep for
