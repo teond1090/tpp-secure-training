@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 """Put the presenter straight onto the slide — no card.
 
-The render is her on a backdrop that measures pure black, so she can be
-keyed: everything above backdrop level that is connected to the bottom edge
-(where her body leaves the frame) is her; the edge is eroded a pixel to
-drop the dark fringe, then feathered. She is scaled and placed so she
-stands in the slide's reserved right column, large, with nothing behind
-her — a hand that goes wide simply passes over the slide's margin, as a
-presenter's would.
+HeyGen ships these renders as VP9 WebM with a real alpha channel — the
+container says alpha_mode 1 — so the matte is exact and free. It has to be
+asked for: ffmpeg's native VP9 decoder silently discards the alpha plane and
+hands back a fully opaque frame, which is what made this file look like a
+plain black-backdrop render. Decoding through libvpx-vp9 returns it.
+
+That matters because she wears a black blazer against a black backdrop, and
+parts of her measure exactly 0 — identical to the backdrop. No threshold can
+separate those, so the keyer below eroded her edges, crawled from frame to
+frame and let the slide flash through her clothes. The shipped matte has none
+of that: fully opaque inside her, exactly zero outside, cleanly anti-aliased
+between. The keyer is kept only for a source that genuinely has no alpha.
+
+She is scaled and placed so she stands in the slide's reserved right column,
+large, with nothing behind her — a hand that goes wide simply passes over the
+slide's margin, as a presenter's would.
 
     python3 tools/cutout.py media/part-2.webm slide.png out.mp4 --start 55 --dur 25
 """
@@ -26,10 +35,20 @@ LUMA_BLUR = 1.2             # px; steadies the contour so the sleeve edge stops 
 MIN_PIECE = 400             # px; a piece this big is part of her even if it looks detached
 SHRINK    = 5.0             # px to pull the contour in, past the render's dark fringe
 SOFT      = 1.2             # px the alpha ramp takes to cross from 0 to 1
-SHADOW    = 0.14            # how dark her contact shadow sits on the slide, 0 for none
+# Off. It was meant to ground her, but at 0.14 over a white slide it read as a
+# dirty grey outline hugging her contour: measured on a plain white background
+# it pulled the slide from 250 down to 209 right at her edge and still had not
+# recovered 20px out. With an exact matte she does not need the help.
+SHADOW    = 0.0             # how dark her contact shadow sits on the slide, 0 for none
 SHADOW_BLUR = 26            # px of softness on that shadow
 SHADOW_DX, SHADOW_DY = 14, 10   # px the shadow is offset, as if the key light is high and left
 FF = imageio_ffmpeg.get_ffmpeg_exe()
+
+
+def has_alpha(src):
+    """True when the WebM carries its own matte (alpha_mode 1 in the container)."""
+    info = subprocess.run([FF, "-i", src], capture_output=True, text=True).stderr
+    return "alpha_mode" in info and re.search(r"alpha_mode\s*:\s*1", info) is not None
 
 
 def fps_of(src):
@@ -114,8 +133,14 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
     """slide_src is a still PNG or a video of the same length; avatar is the render."""
     fps = fps_of(avatar)
     cut = (["-ss", str(start)] if start else []) + (["-t", str(dur)] if dur else [])
-    dec = subprocess.Popen([FF, "-v", "error", *cut, "-i", avatar, "-f", "rawvideo", "-pix_fmt", "rgb24", "pipe:1"],
-                           stdout=subprocess.PIPE, bufsize=SRC_W * SRC_H * 3 * 4)
+    # libvpx-vp9 rather than the native decoder: the native one drops the alpha
+    # plane without saying so, and hands back an opaque frame.
+    alpha = has_alpha(avatar)
+    chans = 4 if alpha else 3
+    dec = subprocess.Popen(
+        [FF, "-v", "error", *(["-c:v", "libvpx-vp9"] if alpha else []), *cut, "-i", avatar,
+         "-f", "rawvideo", "-pix_fmt", "rgba" if alpha else "rgb24", "pipe:1"],
+        stdout=subprocess.PIPE, bufsize=SRC_W * SRC_H * chans * 4)
     sdec = None
     if slide_src.lower().endswith(".png"):
         slide = np.asarray(Image.open(slide_src).convert("RGB").resize((OUT_W, OUT_H)), np.float32)
@@ -132,12 +157,16 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
     if clean:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         from track_presenter import clean_opening
-    nbytes, sbytes, i = SRC_W * SRC_H * 3, OUT_W * OUT_H * 3, 0
+    nbytes, sbytes, i = SRC_W * SRC_H * chans, OUT_W * OUT_H * 3, 0
     slide_done = False
     while True:
         buf = dec.stdout.read(nbytes)
         if len(buf) < nbytes: break
-        frame = np.frombuffer(buf, np.uint8).reshape(SRC_H, SRC_W, 3)
+        arr = np.frombuffer(buf, np.uint8).reshape(SRC_H, SRC_W, chans)
+        if alpha:
+            frame, a = np.ascontiguousarray(arr[..., :3]), arr[..., 3].astype(np.float32) / 255
+        else:
+            frame, a = arr, matte(arr)
         if clean and (i / fps) < clean["until"]:
             frame = frame.copy(); clean_opening(frame, clean["x"])
         if sdec and not slide_done:
@@ -149,7 +178,7 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
                 slide_done = True
             else:
                 slide = np.frombuffer(sb, np.uint8).reshape(OUT_H, OUT_W, 3).astype(np.float32)
-        rgb, al = place(frame, matte(frame), scale, center_x)
+        rgb, al = place(frame, a, scale, center_x)
         al3 = al[..., None]
         base = slide
         if SHADOW:
