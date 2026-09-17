@@ -1,7 +1,7 @@
 {
-  "seconds": 787.09,
+  "seconds": 796.32,
   "crf": 25,
-  "bytes": 88659864,
+  "bytes": 89107888,
   "voice_polish": false,
   "sections": [
     {
@@ -22,71 +22,71 @@
       "part": "part-2-tail.mp4",
       "kind": "section",
       "start": 125.69,
-      "seconds": 91.15,
+      "seconds": 93.32,
       "gate": null
     },
     {
       "part": "check-2.mp4",
       "kind": "bumper",
-      "start": 216.34,
+      "start": 218.51,
       "seconds": 2.4,
-      "gate": 217.54
+      "gate": 219.71
     },
     {
       "part": "part-2b-tail.mp4",
       "kind": "section",
-      "start": 218.24,
+      "start": 220.41,
       "seconds": 102.48,
       "gate": null
     },
     {
       "part": "check-3.mp4",
       "kind": "bumper",
-      "start": 320.22,
+      "start": 322.39,
       "seconds": 2.4,
-      "gate": 321.42
+      "gate": 323.59
     },
     {
       "part": "part-3-tail.mp4",
       "kind": "section",
-      "start": 322.12,
+      "start": 324.29,
       "seconds": 105.7,
       "gate": null
     },
     {
       "part": "check-4.mp4",
       "kind": "bumper",
-      "start": 427.32,
+      "start": 429.49,
       "seconds": 2.4,
-      "gate": 428.52
+      "gate": 430.69
     },
     {
       "part": "part-4-tail.mp4",
       "kind": "section",
-      "start": 429.22,
+      "start": 431.39,
       "seconds": 140.08,
       "gate": null
     },
     {
       "part": "check-5.mp4",
       "kind": "bumper",
-      "start": 568.8,
+      "start": 570.97,
       "seconds": 2.4,
-      "gate": 570.0
+      "gate": 572.17
     },
     {
       "part": "part-5-tail.mp4",
       "kind": "section",
-      "start": 570.7,
-      "seconds": 214.74,
+      "start": 572.87,
+      "seconds": 221.8,
       "gate": null
     },
     {
       "part": "check-6.mp4",
       "kind": "bumper",
-      "start": 784.94,
+      "start": 794.17,
       "seconds": 2.4,
-      "gate": 786.14
+      "gate": 795.37
     }
   ]
 }
