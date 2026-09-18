@@ -42,6 +42,14 @@ SOFT      = 1.2             # px the alpha ramp takes to cross from 0 to 1
 SHADOW    = 0.0             # how dark her contact shadow sits on the slide, 0 for none
 SHADOW_BLUR = 26            # px of softness on that shadow
 SHADOW_DX, SHADOW_DY = 14, 10   # px the shadow is offset, as if the key light is high and left
+GHOST_CORE  = 5             # px; a lump this thin at its waist is not a limb of hers
+GHOST_REACH = 10            # px her contour may sit outside its own core
+GHOST_FRAC  = 0.30          # a core under this share of her core is not part of her
+GHOST_KEEP  = 40            # true colour thin fringe may not be removed above: hair and skin
+GHOST_STEP  = 2             # the shape test runs on every other pixel; 6x cheaper, same verdict
+GHOST_MIN   = 25            # px; below this a piece is a speck, not worth colour-testing
+GHOST_SOLID = 0.10          # alpha a piece must reach to be removed at all
+GHOST_SKIRT = 14            # px of its own soft edge that come away with a piece
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 
 
@@ -114,6 +122,101 @@ def matte(frame):
     a = np.zeros(fg.shape, np.float32)
     a[y0:y1, x0:x1] = np.clip((d - SHRINK) / (2 * SOFT) + 0.5, 0, 1)
     return a
+
+
+def despeckle(rgb, a):
+    """Drop the render's ghost limbs before anything else looks at the matte.
+
+    HeyGen's render carries motion ghosts around a moving hand: a blurred lump
+    that the matte then makes opaque. Measured on part-2b at 48-49s, lumps of
+    up to 4400 px sit beside her hand at alpha 1.00 over a colour that averages
+    10 of 255. On the black backdrop they are invisible — black on black — so
+    they survive review of the source, and on a white slide each one paints a
+    hard grey smudge that swells and vanishes over about six frames. That is
+    what read as a shadow flickering under her arm.
+
+    Neither hardening nor a gentler resample touches this: the matte is not
+    soft there, it is confidently wrong. Colour cannot select it either, since
+    a ghost measures 4 to 31 against a blazer at 21.
+
+    Shape can. She is one solid body, so every part of her is reachable from
+    her core — what survives eroding the matte by GHOST_CORE. A ghost has its
+    own little core, either free-floating or hanging off her by a neck too thin
+    to be a wrist. Over 40 frames of that passage this rejected 29 regions, all
+    of them ghosts of true colour 4 to 31; nothing skin- or hair-coloured was
+    touched. The colour test is kept only as a one-way guard, so that if the
+    shape test ever misfires the piece is kept.
+    """
+    m = a > 0.5
+    if not m.any():
+        return rgb, a
+    # Erode and dilate by distance rather than by repeated 3x3 passes: one pass
+    # each, and a true disc, so a diagonal neck is measured the same as a
+    # straight one. Both run on every other pixel, which is six times cheaper
+    # and agrees with the full-resolution verdict; the coarse grid is paid back
+    # by widening her afterwards, so the error can only ever keep more of her.
+    # The mask is edge-padded first, because she runs off the bottom of the
+    # frame and must not be eroded inward from that edge.
+    s = GHOST_STEP
+    pad = (GHOST_CORE + GHOST_REACH) // s + 2
+    mp = np.pad(m[::s, ::s], pad, mode="edge")
+    core = ndimage.distance_transform_edt(mp) > GHOST_CORE / s
+    lab, n = ndimage.label(core)
+    if n < 2:
+        return rgb, a
+    sizes = ndimage.sum(core, lab, index=range(1, n + 1))
+    good = np.nonzero(sizes >= sizes.max() * GHOST_FRAC)[0] + 1
+    if len(good) == n:
+        return rgb, a
+    body = ndimage.distance_transform_edt(~np.isin(lab, good)) <= GHOST_REACH / s
+    body = ndimage.binary_dilation(body)[pad:-pad, pad:-pad]   # pay back the coarse grid
+    body = np.repeat(np.repeat(body, s, 0), s, 1)[:m.shape[0], :m.shape[1]]
+    # Only material that is actually opaque is a candidate. Her silhouette
+    # carries a very faint halo — alpha around 0.03, two hundred-odd specks a
+    # frame — and sweeping that away here but not on the frames with no ghost
+    # to find would have made her outline flicker at exactly the rate of the
+    # fault being fixed. Each rejected piece still takes its own soft edge with
+    # it, so nothing is left tracing where it was.
+    kill = (a > GHOST_SOLID) & ~body
+    if not kill.any():
+        return rgb, a
+    # Thin fringe that reads as hair or skin is hers whatever its shape says.
+    # The guard stops at fringe: a piece with a core of its own is a solid
+    # object, and she carries none — the ghosts are not all dark, and a
+    # light-grey rounded lump detaches from her hand in RV part 5 at frame
+    # 4863, 3508 px of core at colour 191. Protecting anything pale would have
+    # kept that. Hair wisps have no core, being thin, so they keep their guard.
+    #
+    # Only the pieces worth looking at are tested, and each inside its own
+    # bounding box: a frame carries a few hundred single-pixel specks, and
+    # touching the whole frame once per speck cost more than everything else
+    # here together.
+    solid = np.repeat(np.repeat((lab > 0)[pad:-pad, pad:-pad], s, 0), s, 1)[:m.shape[0], :m.shape[1]]
+    lab, n = ndimage.label(kill)
+    sizes = np.bincount(lab.ravel())
+    boxes = ndimage.find_objects(lab)
+    for j in range(1, n + 1):
+        if sizes[j] < GHOST_MIN:
+            continue
+        sl = boxes[j - 1]
+        piece = lab[sl] == j
+        if (piece & solid[sl]).any():
+            continue                            # has a core of its own: not fringe
+        lit = piece & (a[sl] > 0.4)
+        if lit.any() and np.median((rgb[sl].mean(2) / np.maximum(a[sl], 1e-3))[lit]) >= GHOST_KEEP:
+            kill[sl] &= ~piece
+    if not kill.any():
+        return rgb, a
+    ys, xs = np.nonzero(kill)                    # dilate only where there is something to grow
+    y0, y1 = max(0, ys.min() - GHOST_SKIRT), min(kill.shape[0], ys.max() + GHOST_SKIRT + 1)
+    x0, x1 = max(0, xs.min() - GHOST_SKIRT), min(kill.shape[1], xs.max() + GHOST_SKIRT + 1)
+    win = (slice(y0, y1), slice(x0, x1))
+    kill[win] = ndimage.binary_dilation(kill[win], iterations=GHOST_SKIRT)
+    kill &= ~body & (a > 0)
+    rgb = rgb.copy(); a = a.copy()
+    rgb[kill] = 0
+    a[kill] = 0.0
+    return rgb, a
 
 
 def harden(rgb, a):
@@ -192,6 +295,7 @@ def composite(avatar, slide_src, out, start=None, dur=None, scale=SCALE, center_
         arr = np.frombuffer(buf, np.uint8).reshape(SRC_H, SRC_W, chans)
         if alpha:
             frame, a = np.ascontiguousarray(arr[..., :3]), arr[..., 3].astype(np.float32) / 255
+            frame, a = despeckle(frame, a)
             frame, a = harden(frame, a)
         else:
             frame, a = arr, matte(arr)
